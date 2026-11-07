@@ -1,0 +1,5 @@
+kategorie,ASCII,NFC mit Sonderzeichen,NFD,Summe
+"a Name 1x im Index, anderer Ordner",151,15,0,166
+"d Name nicht im Index, Ordner vorhanden",7,1,0,8
+"e Name nicht im Index, Ordner nicht vorhanden",167,38,25,230
+Summe,325,54,25,404

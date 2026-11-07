@@ -1,0 +1,5 @@
+kategorie,False,True,Summe
+"a Name 1x im Index, anderer Ordner",141,25,166
+"d Name nicht im Index, Ordner vorhanden",8,0,8
+"e Name nicht im Index, Ordner nicht vorhanden",230,0,230
+Summe,379,25,404
