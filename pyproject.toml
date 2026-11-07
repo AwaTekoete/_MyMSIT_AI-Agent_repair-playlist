@@ -10,7 +10,12 @@ readme = "README.md"
 requires-python = ">=3.11"
 license = "MIT"
 authors = [{ name = "AwaTekoete" }]
-dependencies = []          # wird je Phase ergänzt (mutagen, rapidfuzz, ...)
+dependencies = [
+    "pyyaml",          # config/config.yaml lesen
+    "python-dotenv",   # .env lesen (Seriennummer, API-Keys)
+    "pandas",          # Tabellen, CSV-Ergebnisse
+    "matplotlib",      # Grafiken im Store44-Schema (viz_config.py)
+]
 
 [project.optional-dependencies]
 dev = ["ipykernel", "nbstripout", "pytest"]
