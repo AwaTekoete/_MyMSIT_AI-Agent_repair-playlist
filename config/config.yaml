@@ -1,0 +1,44 @@
+# Projektkonfiguration Playlist Repair Agent
+# Public: keine Secrets, keine Seriennummern (-> .env)
+version: 1
+
+stick:
+  # Befund anker_info.txt (06.11.2026): Datentraegername "Lexar", FAT32
+  volume_label: "Lexar"
+  # Primaeres Erkennungsmerkmal (Projektanweisung Workflow 0): Ordner-Signatur.
+  # Befund: alle 5 Ordner existieren auf dem Stick (Angabe Projektinhaber).
+  signatur:
+    - "Musik"
+    - "Playlist"
+    - "_ScratchLIVE_/Crates"
+    - "Playlist_AsusExpertBook_foobar2000"
+    - "Playlist_Medion_foobar2000"
+  # Alle Signatur-Ordner muessen vorhanden sein. Lockerung nur mit Begruendung.
+  signatur_min_treffer: 5
+
+laptops:
+  - name: "asus"
+    hostname: "ASUSExpertbook"            # Befund: Ausgabe 'hostname'
+    zielordner: "Playlist_AsusExpertBook_foobar2000"
+    laufwerk_beobachtet: "D:"             # nur Doku, Logik nutzt Signatur
+  - name: "medion"
+    hostname: "LTMedionErik"              # Befund: Ausgabe 'hostname' Medion
+    zielordner: "Playlist_Medion_foobar2000"
+    laufwerk_beobachtet: "E:"             # Befund: Laurent_Garnier.m3u
+
+quellen:
+  crates: "_ScratchLIVE_/Crates"          # Serato, Wahrheitsquelle
+  mac_playlists: "Playlist"               # Mac-M3U
+  musik: "Musik"                          # Audio + .m3u/.wpl im Musikordner
+
+index:
+  # Befund Index v2: beobachtete Audio-Endungen. In EDA (Phase 1) verifizieren.
+  audio_endungen: [".mp3", ".wav", ".aif"] # Videos (.m4v) bewusst ausgeschlossen
+  # Befund Index v2: 151 AppleDouble-Dateien "._*", max. 4096 Byte
+  appledouble_praefix: "._"
+  appledouble_max_bytes: 4096
+
+matching:
+  # Schwellen werden in Phase 4 datenbasiert kalibriert (Precision = 100 %).
+  # Bewusst leer: keine Annahmen.
+  {}

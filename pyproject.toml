@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "playlist-agent"
+version = "0.1.0"
+description = "Agentic repair and sync of Serato/foobar2000 playlists - feasibility study (MSIT)"
+readme = "README.md"
+requires-python = ">=3.11"
+license = "MIT"
+authors = [{ name = "AwaTekoete" }]
+dependencies = []          # wird je Phase ergänzt (mutagen, rapidfuzz, ...)
+
+[project.optional-dependencies]
+dev = ["ipykernel", "nbstripout", "pytest"]
+
+[tool.setuptools.packages.find]
+where = ["src"]

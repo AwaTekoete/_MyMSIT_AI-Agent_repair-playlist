@@ -1,0 +1,67 @@
+# =============================================================================
+# .gitignore – public Repo: echte Daten, Musik und Secrets duerfen NIE hinein
+# Prinzip: Ordner-Regeln (Kern) + Dateityp-Regeln (Sicherheitsnetz, falls
+# echte Dateien versehentlich ausserhalb von data/ landen)
+# =============================================================================
+
+# --- 1. Private Ordner (Inhalt ignoriert, .gitkeep bleibt fuer die Struktur) ---
+data/**
+!data/**/
+!data/**/.gitkeep
+models/**
+!models/.gitkeep
+logs/**
+!logs/.gitkeep
+reports/run_reports/**
+!reports/run_reports/.gitkeep
+reports/errors/**
+!reports/errors/.gitkeep
+
+# --- 2. MLflow (lokales Tracking, ab Phase 4) ---
+mlruns/
+mlartifacts/
+mlflow.db
+
+# --- 3. Sicherheitsnetz: echte Playlists, Indizes, Musik, Modelle ueberall ---
+*.crate
+*.m3u
+*.m3u8
+*.wpl
+*.fpl
+*musik_index*
+*.mp3
+*.wav
+*.aif
+*.aiff
+*.flac
+*.m4a
+*.joblib
+*.pkl
+# Ausnahme: kleine SYNTHETISCHE Testdaten (public-tauglich, s. Projektanweisung)
+!tests/fixtures/**
+
+# --- 4. Secrets (Vorlage .env.example bleibt im Repo) ---
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+
+# --- 5. Python / Jupyter / Build ---
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.ipynb_checkpoints/
+.pytest_cache/
+.venv/
+
+# --- 6. Betriebssystem-Artefakte (u. a. AppleDouble vom Mac, s. EDA-Vorbefunde) ---
+._*
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# --- 7. Editor ---
+.vscode/
