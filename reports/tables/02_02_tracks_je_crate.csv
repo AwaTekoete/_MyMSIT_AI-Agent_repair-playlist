@@ -1,0 +1,10 @@
+kennzahl,tracks_je_crate
+count,167.0
+mean,47.4
+std,150.1
+min,1.0
+25%,10.0
+50%,13.0
+75%,23.0
+90%,73.4
+max,1330.0

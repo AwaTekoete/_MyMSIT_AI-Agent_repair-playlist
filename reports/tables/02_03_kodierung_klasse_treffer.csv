@@ -1,0 +1,5 @@
+klasse,1 exakt,2 erst nach NFC,4 kein Treffer,Summe
+ASCII,1408,0,325,1733
+NFC mit Sonderzeichen,667,0,54,721
+NFD,0,275,25,300
+Summe,2075,275,404,2754
