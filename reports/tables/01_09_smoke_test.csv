@@ -1,0 +1,14 @@
+pruefung,status,detail
+Python aus Umgebung playlist-agent,PASS,3.11.18
+Paket playlist_agent aus src/ importiert,PASS,
+config.yaml: 2 Laptops mit Hostname,PASS,
+.env: Seriennummer eingetragen (Wert nicht ausgegeben),PASS,
+Git: Remote origin = GitHub-Repo,PASS,
+Git: nbstripout-Filter aktiv,PASS,
+Git ignoriert .env,PASS,
+Git ignoriert data/raw/snapshot_manifest.csv,PASS,
+Git ignoriert data/raw/index/musik_index.csv,PASS,
+Snapshot: Manifest = Dateien in data/raw,PASS,Manifest 380 / Dateien 380
+Snapshot: alle Dateien bitgenau,PASS,
+Index: 7386 Dateien (= PowerShell v2),PASS,7386
+viz_config: Palette-Grafik vorhanden,PASS,
