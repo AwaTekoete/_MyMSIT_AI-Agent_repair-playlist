@@ -23,7 +23,7 @@ Ablage im Repo: `docs/methodik_glossar.md`.
 
 ### AppleDouble-Dateien (`._*`)
 **Definition:** macOS legt auf Dateisystemen ohne Metadaten-Unterstuetzung (FAT32, exFAT) versteckte Begleitdateien `._<name>` mit Metadaten an. Gleiche Endung wie das Original, Inhalt keine Nutzdaten.
-**Projektbezug:** 151 Pseudo-Audiodateien `._*.mp3` (max. 4096 Byte) auf dem Stick. Ein reiner Endungs-Filter wuerde sie als Musik werten -> Linter-Regel (Praefix + Groesse).
+**Projektbezug:** 310 AppleDouble-Dateien im Musikordner, davon 151 mit Audio-Endung (`._*.mp3` 50, `._*.wav` 96, `._*.aif` 5) und 144 `._*.asd`. Ein reiner Endungs-Filter wuerde sie als Musik werten -> Linter-Regel (Praefix + Groesse). Snapshot (07.11.): auch 26 von 55 Dateien im Mac-Playlist-Ordner (47 %) sind AppleDouble, je exakt 4096 Byte.
 
 ### Record Linkage / Entity Resolution
 **Definition:** Aufgabe, Datensaetze verschiedener Quellen derselben realen Entitaet zuzuordnen, wenn kein gemeinsamer eindeutiger Schluessel existiert. Klassisch: Kandidaten erzeugen (Blocking) -> Paare vergleichen (Merkmale) -> Entscheidung (Regel oder Klassifikator).
@@ -55,7 +55,7 @@ Ablage im Repo: `docs/methodik_glossar.md`.
 
 ### Verankerung ueber Ordner-Signatur statt Hardware-ID
 **Definition:** Identifikation eines Datentraegers ueber seine Inhaltsstruktur (Merkmal ueberlebt Kopieren) statt ueber eine Hardware-Kennung (bricht bei neuem Datentraeger).
-**Projektbezug:** Windows lieferte fuer denselben Stick zwei verschiedene Seriennummern (USBSTOR `0113...`, WMI `AA00...` platzhalterartig) -> Seriennummer unzuverlaessig, nur Bestaetigung; Signatur primaer.
+**Projektbezug:** Windows lieferte fuer denselben Stick zwei verschiedene Seriennummern (USBSTOR `0113...`, WMI `AA00...` platzhalterartig) -> Seriennummer unzuverlaessig, nur Bestaetigung; Signatur primaer. Prototyp (Notebook 01, Zelle 06): `D:` 5/5 Signatur-Ordner, `C:`/`G:` 0/5 -> eindeutige Trennung.
 
 ---
 
@@ -84,6 +84,14 @@ Ablage im Repo: `docs/methodik_glossar.md`.
 ### Trennung oeffentliche Konfiguration / lokale Secrets
 **Definition:** Versionierte Konfiguration enthaelt nur unkritische, allgemeine Werte; maschinenspezifische und geheime Werte liegen in einer nicht versionierten Datei (`.env`), dokumentiert ueber eine Vorlage (`.env.example`).
 **Projektbezug:** `config.yaml` (public) vs. `.env` (Seriennummer, API-Key). Regel: echte Werte nie im Notebook-Code, da Code committet wird. Nachweis: `git check-ignore -v .env` -> Regel Zeile 44; Seriennummer per `git grep --cached` nicht im Commit.
+
+### Snapshot mit kryptografischer Pruefsumme (SHA-256)
+**Definition:** Eine Pruefsumme ist ein Fingerabdruck des Dateiinhalts: Schon ein geaendertes Bit ergibt eine voellig andere SHA-256-Summe. Gleiche Summe von Original und Kopie belegt eine bitgenaue Kopie. Ein Manifest (Liste aus Pfad, Groesse, Pruefsumme, Aenderungsdatum) dokumentiert den Stand zum Zeitpunkt des Snapshots.
+**Projektbezug:** 380 Dateien (167 Crates, 213 Playlists, 2,8 MB) vom Stick nach `data/raw` kopiert, 380/380 bitgenau identisch. `shutil.copy2` erhaelt das Aenderungsdatum (relevant fuer Sync-Analyse). Manifest privat in `data/raw/snapshot_manifest.csv`; im Repo nur Zaehlstatistik `01_07_snapshot_pruefung.csv`. Schutz: Abbruch, falls `data/raw` schon Dateien enthaelt (P7). Spaeter nutzbar: Pruefsummen-Vergleich zeigt, ob sich Quellen auf dem Stick seit dem Snapshot geaendert haben.
+
+### Unabhaengige Messwege zur Plausibilisierung
+**Definition:** Dieselbe Groesse wird mit zwei voneinander unabhaengigen Werkzeugen gemessen; Uebereinstimmung erhoeht das Vertrauen, Abweichung zeigt einen Fehler in mindestens einem Messweg.
+**Projektbezug:** PowerShell-Index v2 (06.11.) und Python (07.11., Zellen 06/08) stimmen vollstaendig ueberein: 7.386 Dateien, 128,4 GB, 310 AppleDouble, 5.236 echte Audiodateien (4.924 mp3 + 266 wav + 46 aif), 110 `.m3u`, 36 `.wpl`. Folgerungen: Stick seit 06.11. unveraendert; `.aiff`/`.flac`/`.m4a` kommen nicht vor -> Positivliste der Audio-Endungen in `config.yaml` belegt vollstaendig.
 
 ---
 
