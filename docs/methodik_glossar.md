@@ -4,6 +4,8 @@ Laufend gepflegtes Nachschlagewerk. Jedes im Projekt verwendete methodische
 Konzept wird bei erstmaliger Verwendung dokumentiert: Definition,
 Interpretation, Projektbezug. Reihenfolge = chronologische Einfuehrung.
 Ablage im Repo: `docs/methodik_glossar.md`.
+Datenschutz (strenge Regel, Entscheidung 07.11.2026): keine Fragmente echter
+Pfade, Ordner-, Datei-, Titel- oder Interpretennamen; Beispiele sind generisch.
 
 ---
 
@@ -15,11 +17,11 @@ Ablage im Repo: `docs/methodik_glossar.md`.
 
 ### Unicode-Normalformen NFC / NFD
 **Definition:** Dasselbe sichtbare Zeichen kann unterschiedlich kodiert sein: NFC = vorkomponiert ("ä" = 1 Codepoint U+00E4), NFD = zerlegt ("a" + kombinierendes Trema U+0308 = 2 Codepoints). Bildschirm identisch, Stringvergleich ungleich.
-**Projektbezug:** Vorbefund (2 Crates): 4 NFD-Pfade. EDA (alle Crates, Notebook 02 Zelle 03): 656 von 7.915 Eintraegen bzw. 300 von 2.754 eindeutigen Pfaden in NFD, verteilt auf 72 von 167 Crates; Dateinamen auf dem Stick: 0 NFD; foobar schreibt Pfade in NFC (11/11, Zelle 05). Alle Crates wurden am Mac erstellt (Angabe Projektinhaber), enthalten aber NFC (721 Pfade mit Sonderzeichen) und NFD (300) -> Ursache der Mischung offen. 275 der 300 NFD-Pfade (91,7 %) treffen erst nach NFC-Normalisierung (Stufe 4.2); fuer 25 NFD-Pfade auch danach kein Treffer (Ursache offen, Zelle 06). Evidenz (Zelle 04): Crate `a`+U+0308 / `u`+U+0308 vs. Stick U+00E4 / U+00FC. Lehre: Aus 2 Crates war die Bedeutung von Stufe 4.2 nicht erkennbar (Vorbefund 0,0 % bzw. 0,3 %), ueber alle Crates betrifft sie 10,0 % der eindeutigen Pfade.
+**Projektbezug:** Vorbefund (2 Crates): 4 NFD-Pfade. EDA (alle Crates, Notebook 02 Zelle 03): 656 von 7.915 Eintraegen bzw. 300 von 2.754 eindeutigen Pfaden in NFD, verteilt auf 72 von 167 Crates; Dateinamen auf dem Stick: 0 NFD; foobar schreibt Pfade in NFC (11/11, Zelle 05). Alle Crates wurden am Mac erstellt (Angabe Projektinhaber), enthalten aber NFC (721 Pfade mit Sonderzeichen) und NFD (300) -> Ursache der Mischung offen. 275 der 300 NFD-Pfade (91,7 %) treffen erst nach NFC-Normalisierung (Stufe 4.2); fuer 25 NFD-Pfade auch danach kein Treffer (alle in Kategorie e, Zelle 06). Evidenz (Zelle 04): Crate `a`+U+0308 bzw. `u`+U+0308 vs. Stick U+00E4 bzw. U+00FC. Lehre: Aus 2 Crates war die Bedeutung von Stufe 4.2 nicht erkennbar (Vorbefund 0,0 % bzw. 0,3 %), ueber alle Crates betrifft sie 10,0 % der eindeutigen Pfade.
 
 ### Mojibake
-**Definition:** Zeichensalat durch falsch interpretierte Kodierung, typisch UTF-8-Bytes als Windows-1252 gelesen: "ü" -> "Ã¼".
-**Projektbezug:** 20 echte Dateinamen auf dem Stick betroffen (z. B. `FlÃ¼gel`). Nicht nur Playlists, auch Dateinamen selbst. Erkennung/Reparatur z. B. mit `ftfy`; Aenderung an Musikdateien nur als Vorschlag (P1/P4). Von den Trefferstufen 1-3 nicht erfasst -> moegliche Faelle unter den 404 Fehltreffern, Test in Zelle 06.
+**Definition:** Zeichensalat durch falsch interpretierte Kodierung, typisch UTF-8-Bytes als Windows-1252 gelesen: "Grün" -> "GrÃ¼n".
+**Projektbezug:** 20 Dateinamen auf dem Stick mit Mojibake-Verdacht (Index), davon 1 Audiodatei per Reparatur (cp1252 -> UTF-8) rueckfuehrbar; kein Crate-Pfad verweist darauf (Kategorie c = 0, Zelle 06). Aenderung an Musikdateien nur als Vorschlag (P1/P4).
 
 ### AppleDouble-Dateien (`._*`)
 **Definition:** macOS legt auf Dateisystemen ohne Metadaten-Unterstuetzung (FAT32, exFAT) versteckte Begleitdateien `._<name>` mit Metadaten an. Gleiche Endung wie das Original, Inhalt keine Nutzdaten.
@@ -31,15 +33,15 @@ Ablage im Repo: `docs/methodik_glossar.md`.
 
 ### Precision vor Recall (asymmetrische Fehlerkosten)
 **Definition:** Precision = Anteil korrekter unter allen als "Treffer" gemeldeten Faellen; Recall = Anteil gefundener unter allen tatsaechlichen Treffern. Bei ungleichen Fehlerkosten wird eine Metrik priorisiert und die Entscheidungsschwelle danach kalibriert.
-**Projektbezug:** Falscher Track in einer Playlist ist schlimmer als ein ehrlich gemeldetes "fehlt" (P5). Ziel: Precision = 100 % in der Klasse "sicher"; Recall darf darunter liegen. Belegt durch Vorbefund: naives Fuzzy-Matching lieferte plausible Falschtreffer (`BigFM 2006 ...` -> `BigFM 2007 ...`).
+**Projektbezug:** Falscher Track in einer Playlist ist schlimmer als ein ehrlich gemeldetes "fehlt" (P5). Ziel: Precision = 100 % in der Klasse "sicher"; Recall darf darunter liegen. Belegt durch Vorbefund: naives Fuzzy-Matching schlug fuer einen fehlenden Ordner mit Datum 2006 einen anderen Ordner mit Datum 2007 vor (anderes Ereignis).
 
 ### Harte Vetos (Ausschlussregeln)
 **Definition:** Regeln, die einen Kandidaten unabhaengig vom Aehnlichkeitswert verwerfen, wenn ein eindeutiges Unterscheidungsmerkmal widerspricht.
-**Projektbezug:** Unterschiedliche Datums-Tokens, Ordnungszahlen (`6th` vs. `8th`) oder Tracknummern -> kein Treffer. Haette beide Falschtreffer der Vorbefunde verhindert.
+**Projektbezug:** Unterschiedliche Datums-Tokens, Ordnungszahlen (z. B. `6th` vs. `8th`) oder Tracknummern -> kein Treffer. Haette beide Falschtreffer der Vorbefunde verhindert.
 
 ### Ground Truth / Gold-Set als Messmittel
 **Definition:** Von Hand verifizierte Referenzmenge, gegen die automatische Verfahren gemessen werden. Analog Messsystemanalyse: Ein Verfahren wird nicht mit sich selbst kalibriert.
-**Projektbezug:** Stichprobe vorhandener Playlist-Eintraege, je Eintrag "richtige Datei" oder "fehlt" bestaetigt; stratifiziert mit Ueberrepraesentation schwieriger Faelle. Ein Agent, der "alle Titel finden" soll, kann sich nicht selbst bewerten. Erste 13 Gold-Labels (Zelle 05): 10 per foobar bestaetigt, 1 verschoben per Handsuche gefunden, 2 fehlend.
+**Projektbezug:** Stichprobe vorhandener Playlist-Eintraege, je Eintrag "richtige Datei" oder "fehlt" bestaetigt; stratifiziert mit Ueberrepraesentation schwieriger Faelle. Ein Agent, der "alle Titel finden" soll, kann sich nicht selbst bewerten. Erste 13 Gold-Labels (Zelle 05): 10 per foobar bestaetigt, 1 an anderem Ort per Handsuche gefunden, 2 fehlend.
 
 ### Rule of Three (Konfidenz bei null Fehlern)
 **Definition:** Werden in n unabhaengigen Faellen 0 Fehler beobachtet, liegt die wahre Fehlerrate mit 95 % Konfidenz unter ca. 3/n.
@@ -55,7 +57,7 @@ Ablage im Repo: `docs/methodik_glossar.md`.
 
 ### Verankerung ueber Ordner-Signatur statt Hardware-ID
 **Definition:** Identifikation eines Datentraegers ueber seine Inhaltsstruktur (Merkmal ueberlebt Kopieren) statt ueber eine Hardware-Kennung (bricht bei neuem Datentraeger).
-**Projektbezug:** Windows lieferte fuer denselben Stick zwei verschiedene Seriennummern (USBSTOR `0113...`, WMI `AA00...` platzhalterartig) -> Seriennummer unzuverlaessig, nur Bestaetigung; Signatur primaer. Prototyp (Notebook 01, Zelle 06): `D:` 5/5 Signatur-Ordner, `C:`/`G:` 0/5 -> eindeutige Trennung.
+**Projektbezug:** Windows lieferte fuer denselben Stick zwei verschiedene Seriennummern (USBSTOR- und WMI-Wert, letzterer platzhalterartig) -> Seriennummer unzuverlaessig, nur Bestaetigung; Signatur primaer. Prototyp (Notebook 01, Zelle 06): Stick-Laufwerk 5/5 Signatur-Ordner, alle anderen Laufwerke 0/5 -> eindeutige Trennung.
 
 ---
 
@@ -69,9 +71,9 @@ Ablage im Repo: `docs/methodik_glossar.md`.
 **Definition:** Git wertet `.gitignore` von oben nach unten aus; bei mehreren passenden Regeln gilt die letzte. Negationen (`!`) holen Dateien zurueck, aber nicht aus ausgeschlossenen Elternordnern (daher `!data/**/` vor `!data/**/.gitkeep`).
 **Projektbezug:** Test mit echtem Git zeigte 6 Lecks der ersten Fassung (z. B. `.env.local`, `.crate` ausserhalb von `data/`). Fassung 2 kombiniert Ordner-Regeln mit Dateityp-Regeln; Secret-Regeln stehen nach der `tests/fixtures/`-Ausnahme, damit sie Vorrang haben. Verifiziert: 16/16 kritische Testdateien ignoriert.
 
-### Git-Clean-Filter (nbstripout)
+### Git-Clean-Filter (nbstripout) und seine Grenze
 **Definition:** Ein Filter, den Git beim Uebertragen ins Repository auf Dateien anwendet. Arbeitskopie bleibt unveraendert, nur der gespeicherte Stand wird bereinigt.
-**Projektbezug:** Notebook-Ausgaben (Pfade wie `c:\Users\...`, Tracklisten) werden beim Commit entfernt. Nachweis: lokal 2 Treffer "Projektwurzel:", im Commit 1 (nur Quellcode). Filter-Definition liegt in `.git/config` (pro Rechner!) -> auf dem Medion erneut `nbstripout --install`.
+**Projektbezug:** Notebook-Ausgaben werden beim Commit entfernt. Nachweis: lokal 2 Treffer "Projektwurzel:", im Commit 1 (nur Quellcode). Filter-Definition liegt in `.git/config` (pro Rechner!) -> auf dem Medion erneut `nbstripout --install`. **Grenze (Befund 07.11.):** Code- und Markdown-Zellen werden vollstaendig committet; echte Pfade im Code waren dadurch oeffentlich -> Regel: echte Werte nur in privaten Eingabedateien (`data/`), Pruefung vor jedem Commit.
 
 ### Inhaltsadressierte Speicherung (Git-Objekte)
 **Definition:** Git speichert Inhalte unter ihrem Hash; identische Inhalte existieren nur einmal (Blobs fuer Dateien, Trees fuer Ordner).
@@ -79,7 +81,7 @@ Ablage im Repo: `docs/methodik_glossar.md`.
 
 ### Historie bereinigen: Force-Push vs. Neuanlage
 **Definition:** Umgeschriebene Commits ersetzen per Force-Push den alten Stand; der alte Commit kann aber ueber seine ID noch abrufbar bleiben, bis der Server aufraeumt. Nur Loeschen und Neuanlegen des Repos garantiert die Entfernung.
-**Projektbezug:** Name aus LICENSE/pyproject entfernt; lokal `git commit --amend`, Repo neu angelegt. Nachweis: alte Commit-URL liefert 404.
+**Projektbezug:** Name aus LICENSE/pyproject entfernt; lokal `git commit --amend`, Repo neu angelegt. Nachweis: alte Commit-URL liefert 404. Zweiter Fall (07.11.): Pfadfragmente in Zellen 03-06 -> Entscheidung "nur kuenftig korrigieren", Historie bleibt.
 
 ### Trennung oeffentliche Konfiguration / lokale Secrets
 **Definition:** Versionierte Konfiguration enthaelt nur unkritische, allgemeine Werte; maschinenspezifische und geheime Werte liegen in einer nicht versionierten Datei (`.env`), dokumentiert ueber eine Vorlage (`.env.example`).
@@ -87,7 +89,7 @@ Ablage im Repo: `docs/methodik_glossar.md`.
 
 ### Snapshot mit kryptografischer Pruefsumme (SHA-256)
 **Definition:** Eine Pruefsumme ist ein Fingerabdruck des Dateiinhalts: Schon ein geaendertes Bit ergibt eine voellig andere SHA-256-Summe. Gleiche Summe von Original und Kopie belegt eine bitgenaue Kopie. Ein Manifest (Liste aus Pfad, Groesse, Pruefsumme, Aenderungsdatum) dokumentiert den Stand zum Zeitpunkt des Snapshots.
-**Projektbezug:** 380 Dateien (167 Crates, 213 Playlists, 2,8 MB) vom Stick nach `data/raw` kopiert, 380/380 bitgenau identisch. `shutil.copy2` erhaelt das Aenderungsdatum (relevant fuer Sync-Analyse). Manifest privat in `data/raw/snapshot_manifest.csv`; im Repo nur Zaehlstatistik `01_07_snapshot_pruefung.csv`. Schutz: Abbruch, falls `data/raw` schon Dateien enthaelt (P7). Spaeter nutzbar: Pruefsummen-Vergleich zeigt, ob sich Quellen auf dem Stick seit dem Snapshot geaendert haben.
+**Projektbezug:** 380 Dateien (167 Crates, 213 Playlists, 2,8 MB) vom Stick nach `data/raw` kopiert, 380/380 bitgenau identisch. `shutil.copy2` erhaelt das Aenderungsdatum (relevant fuer Sync-Analyse). Manifest privat in `data/raw/snapshot_manifest.csv`; im Repo nur Zaehlstatistik `01_07_snapshot_pruefung.csv`. Schutz: Abbruch, falls `data/raw` schon Dateien enthaelt (P7).
 
 ### Unabhaengige Messwege zur Plausibilisierung
 **Definition:** Dieselbe Groesse wird mit zwei voneinander unabhaengigen Werkzeugen gemessen; Uebereinstimmung erhoeht das Vertrauen, Abweichung zeigt einen Fehler in mindestens einem Messweg.
@@ -110,16 +112,16 @@ Ablage im Repo: `docs/methodik_glossar.md`.
 **Projektbezug:** 7.915 Crate-Eintraege, aber 2.754 eindeutige Pfade (jeder Pfad im Schnitt in 2,9 Crates). Song-Ebene (eindeutige Pfade) = technische Kernmetrik; Playlist-Ebene (je Crate: vollstaendig wiederherstellbar?) = Nutzersicht. Einschraenkung: Song ist nicht gleich Pfad (Dubletten) -> Inhalts-Hash in Zelle 09.
 
 ### UTF-16 im Texteditor: scheinbare Leerzeichen
-**Definition:** UTF-16 speichert jedes Zeichen in 2 Byte; bei lateinischen Buchstaben ist ein Byte `00`. Ein Editor, der die Datei als 1-Byte-Text liest, zeigt `00` als Luecke -> "S v e n". Kombinierende Zeichen (z. B. Trema U+0308) werden dabei oft unsichtbar -> "Vath" statt "Väth".
-**Projektbezug:** Stichprobe "Coming Home" (07.11.): Editor zeigte `V a t h`, Codepoint-Analyse belegt `a` + U+0308 (NFD). Lehre: Kodierungsfragen nur mit Codepoint-Analyse beantworten, nie per Augenschein.
+**Definition:** UTF-16 speichert jedes Zeichen in 2 Byte; bei lateinischen Buchstaben ist ein Byte `00`. Ein Editor, der die Datei als 1-Byte-Text liest, zeigt `00` als Luecke ("A b c"). Kombinierende Zeichen (z. B. Trema U+0308) werden dabei oft unsichtbar ("a" statt "ä"). Feldkennungen wie `talb` erscheinen als scheinbar chinesische Zeichen.
+**Projektbezug:** Stichprobe (07.11.): Editor zeigte in einer Crate einen Umlaut als "a", Codepoint-Analyse belegt `a` + U+0308 (NFD). Gleicher Effekt in Serato `database V2`. Lehre: Kodierungsfragen nur mit Codepoint-Analyse beantworten, nie per Augenschein.
 
 ### Trefferstufen-Kaskade (Stufen 1-4) und Akzent-Entfernung als Diagnose
-**Definition:** Je Crate-Pfad wird gegen alle Index-Pfade nacheinander geprueft; die erste zutreffende Stufe zaehlt: 1 Zeichen-identisch; 2 identisch nach NFC-Normalisierung beider Seiten; 3 identisch nach Akzent-Entfernung (NFKD, kombinierende Zeichen entfernt, Kleinschreibung, "Väth" -> "vath"); 4 kein Treffer. "Treffer" bedeutet Gleichheit der Zeichenkette, nicht Inhaltsgleichheit (V2).
-**Projektbezug:** Notebook 02 Zelle 03, alle 2.754 eindeutigen Pfade vollstaendig geprueft: Stufe 1 2.075 (75,3 %), Stufe 2 275 (10,0 %), Stufe 3 0, Stufe 4 404 (14,7 %). Belegte Aussage: Unter den Pfaden, die bis auf Akzente identisch sind, gibt es keinen verlorenen Umlaut. Nicht belegt: verlorene Umlaute in zusaetzlich verschobenen Pfaden (landen in Stufe 4) sowie Mojibake-Faelle (von keiner Stufe erfasst). Fehlquote je Klasse: ASCII 18,8 %, NFC 7,5 %, NFD 8,3 % -> Hauptursache der Fehltreffer nicht Kodierung. Evidenz je Stufe in Zelle 04, unabhaengige Bestaetigung durch foobar in Zelle 05.
+**Definition:** Je Crate-Pfad wird gegen alle Index-Pfade nacheinander geprueft; die erste zutreffende Stufe zaehlt: 1 Zeichen-identisch; 2 identisch nach NFC-Normalisierung beider Seiten; 3 identisch nach Akzent-Entfernung (NFKD, kombinierende Zeichen entfernt, Kleinschreibung, "ä" -> "a"); 4 kein Treffer. "Treffer" bedeutet Gleichheit der Zeichenkette, nicht Inhaltsgleichheit (V2).
+**Projektbezug:** Notebook 02 Zelle 03, alle 2.754 eindeutigen Pfade vollstaendig geprueft: Stufe 1 2.075 (75,3 %), Stufe 2 275 (10,0 %), Stufe 3 0, Stufe 4 404 (14,7 %). Belegte Aussage: Unter den Pfaden, die bis auf Akzente identisch sind, gibt es keinen verlorenen Umlaut. Nicht belegt: verlorene Umlaute in zusaetzlich verschobenen Pfaden (landen in Stufe 4). Fehlquote je Klasse: ASCII 18,8 %, NFC 7,5 %, NFD 8,3 % -> Hauptursache der Fehltreffer nicht Kodierung. Evidenz je Stufe in Zelle 04, unabhaengige Bestaetigung durch foobar in Zelle 05.
 
 ### Unabhaengige Referenz durch Fremdsystem (foobar-Test)
 **Definition:** Ergebnisse des eigenen Codes werden gegen ein System geprueft, das den Code nicht kennt; Uebereinstimmung belegt die Logik ohne Zirkelschluss.
-**Projektbezug:** 13 geschichtete Stichproben-Songs (SEED 42): foobar schrieb fuer 11 Songs die Pfade selbst. 11/11 identisch mit dem Referenzpfad des Codes; NFD-Faelle (3) nach NFC gleich, verschobener Fall (1) weder exakt noch nach NFC gleich -> Stufen 1, 2 und "verschoben" unabhaengig bestaetigt. 2 Songs auch per Handsuche nicht auffindbar.
+**Projektbezug:** 13 geschichtete Stichproben-Songs (SEED 42): foobar schrieb fuer 11 Songs die Pfade selbst. 11/11 identisch mit dem Referenzpfad des Codes; NFD-Faelle (3) nach NFC gleich, Fall an anderem Ort (1) weder exakt noch nach NFC gleich -> Stufen 1, 2 und "anderer Ort" unabhaengig bestaetigt. 2 Songs auch per Handsuche nicht auffindbar.
 
 ### Zeichenkodierung von Playlist-Dateien: ANSI (.m3u) vs. UTF-8 mit BOM (.m3u8)
 **Definition:** ANSI/cp1252 speichert jedes Zeichen in 1 Byte (ca. 250 darstellbare Zeichen); UTF-8 nutzt 1-4 Byte und kann alle Unicode-Zeichen darstellen. Ein BOM (Byte Order Mark, `EF BB BF`) am Dateianfang kennzeichnet UTF-8.
@@ -128,6 +130,10 @@ Ablage im Repo: `docs/methodik_glossar.md`.
 ### pandas: `None` wird zu `NaN`, `NaN` gilt als wahr
 **Definition:** Fehlende Werte in DataFrame-Spalten werden als `NaN` (Typ `float`) gespeichert, auch wenn `None` eingetragen wurde. In Python ist `NaN` "wahr" (`bool(float('nan')) == True`); `if wert:` erkennt fehlende Werte daher nicht. Korrekt: `pd.notna(wert)` / `pd.isna(wert)`.
 **Projektbezug:** Fehler in Zelle 04 (Stichprobe): Stufe-4-Zeilen ohne Index-Partner wurden faelschlich als vorhanden behandelt -> `AttributeError`. Behoben durch `pd.notna`.
+
+### Kategorisierung ueber Rechenvorschrift statt Ursachenbehauptung
+**Definition:** Kategorien werden ueber das definiert, was der Code berechnet (z. B. "Name genau 1x im Index"), nicht ueber vermutete Ursachen ("verschoben", "geloescht"). Ursachen werden ausdruecklich als Hypothesen gekennzeichnet. Namensgleichheit belegt keine Inhaltsgleichheit.
+**Projektbezug:** Zelle 06, 404 Fehltreffer, Schluessel Kleinschreibung(NFC(Dateiname)) gegen 5.236 Audiodateien: a Name 1x im Index, anderer Ordner 166 (41,1 %); b mehrfach 0; c erst nach Mojibake-Reparatur 0; d Name nicht im Index, Ordner vorhanden 8 (2,0 %); e Name nicht im Index, Ordner nicht vorhanden 230 (56,9 %). Zusatzmerkmal "gleichnamiger Ordner anderswo": 25, alle in a (15,1 % von a), in d/e 0. Validierung gegen Handsuche 3/3. Ueber Namensgleichheit Kandidat fuer 2.516 von 2.754 Pfaden (91,4 %); fuer 238 (8,6 %) kein Kandidat -> Metadatenquelle noetig (Serato `database V2`, Zelle 07).
 
 ---
 
