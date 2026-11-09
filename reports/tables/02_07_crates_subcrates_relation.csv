@@ -1,0 +1,6 @@
+relation,crates,jaccard_median
+Subcrate Obermenge,3,0.717391304347826
+Subcrate Teilmenge,8,0.7065611605670953
+identisch,97,1.0
+kein Namenspartner,56,
+Überlappung,3,0.5790671217292378
