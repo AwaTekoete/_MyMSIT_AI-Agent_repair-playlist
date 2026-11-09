@@ -28,7 +28,7 @@ TEXT_ENDUNGEN = {".ipynb", ".py", ".md", ".csv", ".yaml", ".yml", ".toml", ".txt
 
 # Allgemeine Wörter, die zufällig auch als Datei-/Ordnername auf dem Stick
 # vorkommen, aber Teil des Projektvokabulars sind (Fehlalarme, belegt 09.11.2026).
-GENERISCHE_BEGRIFFE = {"playlist"}
+GENERISCHE_BEGRIFFE = {"playlist", "software"}
 
 def _norm(s: str) -> str:
     """NFC + Kleinschreibung: gleiche Schreibweise unabhängig von Kodierung."""
