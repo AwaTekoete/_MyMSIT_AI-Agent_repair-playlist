@@ -1,0 +1,4 @@
+gruppe,pfade,in_database,mit_tsng,mit_tart,mit_tlen,mit_tsiz,anteil_in_database
+alte Crates,2559,2477,2475,2384,2394,1895,0.968
+Subcrates,3145,3145,3142,2721,3042,2387,1.0
+"alte Crates, Stufe 4",386,308,308,281,304,284,0.798
