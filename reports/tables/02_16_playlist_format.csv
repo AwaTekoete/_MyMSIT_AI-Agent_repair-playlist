@@ -1,0 +1,18 @@
+quelle,endung,kodierung,zeilenende,kopf_extm3u,dateien,mit_extinf,eintraege,leer
+foobar_asus,.m3u,ASCII,CRLF,False,4,0,47.0,0
+foobar_asus,.m3u,cp1252,CRLF,False,1,0,150.0,0
+foobar_medion,.m3u,ASCII,CRLF,False,4,0,180.0,0
+foobar_medion,.m3u,ASCII,LF,True,1,1,36.0,0
+foobar_medion,.m3u,cp1252,CRLF,False,2,0,109.0,0
+mac_playlists,.m3u,ASCII,CRLF,False,1,0,7.0,0
+mac_playlists,.m3u,ASCII,CRLF,True,1,1,7.0,0
+mac_playlists,.m3u,ASCII,LF,True,13,13,163.0,0
+mac_playlists,.m3u,UTF-8 ohne BOM,LF,True,13,13,312.0,0
+mac_playlists,.m3u,cp1252,CRLF,True,1,1,13.0,0
+musik_playlists,.m3u,ASCII,CRLF,False,10,0,255.0,0
+musik_playlists,.m3u,ASCII,CRLF,True,9,9,266.0,0
+musik_playlists,.m3u,ASCII,LF,False,5,0,17.0,0
+musik_playlists,.m3u,cp1252,CRLF,False,30,0,1957.0,0
+musik_playlists,.m3u,cp1252,CRLF,True,56,56,5100.0,0
+musik_playlists,.wpl,ASCII,CRLF,False,11,0,272.0,1
+musik_playlists,.wpl,UTF-8 ohne BOM,CRLF,False,25,0,1398.0,1
