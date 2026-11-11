@@ -1,0 +1,4 @@
+kategorie,pfade,in_database,mit_tsng,mit_tart,mit_tlen,mit_tsiz,anteil_in_database
+"a Name 1x im Index, anderer Ordner",166,88,88,64,87,84,0.53
+"d Name nicht im Index, Ordner vorhanden",8,8,8,6,8,8,1.0
+"e Name nicht im Index, Ordner nicht vorhanden",230,230,230,229,227,194,1.0
