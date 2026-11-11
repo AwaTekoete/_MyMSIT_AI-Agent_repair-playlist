@@ -1,0 +1,4 @@
+endung,n_probe,fehler,sek_median,sek_mittel,sek_max,mit_title,mit_artist,mit_duration,n_gesamt,hochrechnung_min
+.aif,40,0,0.001,0.001,0.003,35,0,40,46,0.0
+.mp3,40,0,0.025,0.052,1.077,37,36,40,4924,4.3
+.wav,40,0,0.024,0.02,0.031,38,1,40,266,0.1
