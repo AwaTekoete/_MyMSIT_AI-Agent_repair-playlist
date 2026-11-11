@@ -1,0 +1,10 @@
+kennzahl,wert
+Crates gesamt,167.0
+Crates 100 % sicher (Stufe 1-2),125.0
+Crates >= 90 % sicher,145.0
+Crates < 50 % sicher,7.0
+Crates mit Pfad ohne Beleg,0.0
+Mittel Anteil sicher je Crate,0.932
+Bootstrap 95-%-KI unten,0.901
+Bootstrap 95-%-KI oben,0.96
+Median Anteil sicher je Crate,1.0
