@@ -15,6 +15,7 @@ dependencies = [
     "python-dotenv",   # .env lesen (Seriennummer, API-Keys)
     "pandas",          # Tabellen, CSV-Ergebnisse
     "matplotlib",      # Grafiken im Store44-Schema (viz_config.py)
+    "tinytag",         # Audio-Tags und Dauer nur lesen, MIT-Lizenz (Entscheidung 11.11.2026)
 ]
 
 [project.optional-dependencies]
