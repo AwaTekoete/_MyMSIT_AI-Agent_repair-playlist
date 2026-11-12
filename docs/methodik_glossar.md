@@ -13,11 +13,11 @@ Pfade, Ordner-, Datei-, Titel- oder Interpretennamen; Beispiele sind generisch.
 
 ### Tag-Length-Value-Format (TLV)
 **Definition:** Binaeres Datenformat aus wiederholten Bloecken: Kennung (Tag), Laenge des Inhalts, Inhalt. Verschachtelung moeglich (ein Inhalt enthaelt wieder TLV-Bloecke).
-**Projektbezug:** Serato-`.crate`: 4-Byte-Tag (z. B. `otrk` = Track, `ptrk` = Pfad), 4-Byte-Laenge Big-Endian, Strings UTF-16-BE. Parser liest Bloecke sequenziell, ohne das Format "raten" zu muessen. EDA 07.11.: alle 167 Crates vollstaendig bis zum letzten Byte gelesen, eine einzige Version (`1.0/Serato ScratchLive Crate`). 09.11.: ebenso alle 203 Subcrates; `database V2` beginnt ebenfalls mit `vrsn` (vollstaendiges Lesen offen).
+**Projektbezug:** Serato-`.crate`: 4-Byte-Tag (z. B. `otrk` = Track, `ptrk` = Pfad), 4-Byte-Laenge Big-Endian, Strings UTF-16-BE. Parser liest Bloecke sequenziell, ohne das Format "raten" zu muessen. EDA 07.11.: alle 167 Crates vollstaendig bis zum letzten Byte gelesen, eine einzige Version (`1.0/Serato ScratchLive Crate`). 09.11.: ebenso alle 203 Subcrates; `database V2` ebenfalls TLV (Datei und alle 5.478 Track-Bloecke gehen exakt auf, Notebook 02 Zelle 08). Dekodierung der Felder nach Tag-Praefix (t/p Text UTF-16-BE, u/s/b Zahl) fuer alle Felder erfolgreich.
 
 ### Unicode-Normalformen NFC / NFD
 **Definition:** Dasselbe sichtbare Zeichen kann unterschiedlich kodiert sein: NFC = vorkomponiert ("ä" = 1 Codepoint U+00E4), NFD = zerlegt ("a" + kombinierendes Trema U+0308 = 2 Codepoints). Bildschirm identisch, Stringvergleich ungleich.
-**Projektbezug:** Vorbefund (2 Crates): 4 NFD-Pfade. EDA (alle Crates, Notebook 02 Zelle 03): 656 von 7.915 Eintraegen bzw. 300 von 2.754 eindeutigen Pfaden in NFD, verteilt auf 72 von 167 Crates; Dateinamen auf dem Stick: 0 NFD; foobar schreibt Pfade in NFC (11/11, Zelle 05). Alle Crates wurden am Mac erstellt (Angabe Projektinhaber), enthalten aber NFC (721 Pfade mit Sonderzeichen) und NFD (300) -> Ursache der Mischung offen. 275 der 300 NFD-Pfade (91,7 %) treffen erst nach NFC-Normalisierung (Stufe 4.2); fuer 25 NFD-Pfade auch danach kein Treffer (alle in Kategorie e, Zelle 06). Evidenz (Zelle 04): Crate `a`+U+0308 bzw. `u`+U+0308 vs. Stick U+00E4 bzw. U+00FC. Nach NFC-Normalisierung schrumpfen die 2.754 eindeutigen Crate-Pfade auf 2.559 (Zelle 07): 195 Pfade lagen in beiden Formen vor. Lehre: Aus 2 Crates war die Bedeutung von Stufe 4.2 nicht erkennbar (Vorbefund 0,0 % bzw. 0,3 %), ueber alle Crates betrifft sie 10,0 % der eindeutigen Pfade.
+**Projektbezug:** Vorbefund (2 Crates): 4 NFD-Pfade. EDA (alle Crates, Notebook 02 Zelle 03): 656 von 7.915 Eintraegen bzw. 300 von 2.754 eindeutigen Pfaden in NFD, verteilt auf 72 von 167 Crates; Dateinamen auf dem Stick: 0 NFD; foobar schreibt Pfade in NFC (11/11, Zelle 05). Alle Crates wurden am Mac erstellt (Angabe Projektinhaber), enthalten aber NFC (721 Pfade mit Sonderzeichen) und NFD (300) -> Ursache der Mischung offen. 275 der 300 NFD-Pfade (91,7 %) treffen erst nach NFC-Normalisierung (Stufe 4.2). Nach NFC-Normalisierung schrumpfen die 2.754 eindeutigen Crate-Pfade auf 2.559 (Zelle 07): 195 Pfade lagen in beiden Formen vor. `database V2` (Zelle 09): 746 Pfade doppelt, jeweils genau 1x NFC und 1x NFD, keine Zeichen-identischen Doppel -> Parser fuehrt Eintraege nach NFC zusammen. Lehre: Aus 2 Crates war die Bedeutung von Stufe 4.2 nicht erkennbar (Vorbefund 0,0 % bzw. 0,3 %), ueber alle Crates betrifft sie 10,0 % der eindeutigen Pfade.
 
 ### Mojibake
 **Definition:** Zeichensalat durch falsch interpretierte Kodierung, typisch UTF-8-Bytes als Windows-1252 gelesen: "Grün" -> "GrÃ¼n".
@@ -37,19 +37,19 @@ Pfade, Ordner-, Datei-, Titel- oder Interpretennamen; Beispiele sind generisch.
 
 ### Harte Vetos (Ausschlussregeln)
 **Definition:** Regeln, die einen Kandidaten unabhaengig vom Aehnlichkeitswert verwerfen, wenn ein eindeutiges Unterscheidungsmerkmal widerspricht.
-**Projektbezug:** Unterschiedliche Datums-Tokens, Ordnungszahlen (z. B. `6th` vs. `8th`) oder Tracknummern -> kein Treffer. Haette beide Falschtreffer der Vorbefunde verhindert.
+**Projektbezug:** Unterschiedliche Datums-Tokens, Ordnungszahlen (z. B. `6th` vs. `8th`) oder Tracknummern -> kein Treffer. Haette beide Falschtreffer der Vorbefunde verhindert. Einschraenkung (Zelle 13/14): Dauer-Abweichung ist kein hartes Veto, da 3,2 % der Paare mit nachweislich gleicher Datei > 2 s abweichen.
 
 ### Ground Truth / Gold-Set als Messmittel
 **Definition:** Von Hand verifizierte Referenzmenge, gegen die automatische Verfahren gemessen werden. Analog Messsystemanalyse: Ein Verfahren wird nicht mit sich selbst kalibriert.
-**Projektbezug:** Stichprobe vorhandener Playlist-Eintraege, je Eintrag "richtige Datei" oder "fehlt" bestaetigt; stratifiziert mit Ueberrepraesentation schwieriger Faelle. Ein Agent, der "alle Titel finden" soll, kann sich nicht selbst bewerten. Erste 13 Gold-Labels (Zelle 05): 10 per foobar bestaetigt, 1 an anderem Ort per Handsuche gefunden, 2 fehlend.
+**Projektbezug:** Stichprobe vorhandener Playlist-Eintraege, je Eintrag "richtige Datei" oder "fehlt" bestaetigt; stratifiziert mit Ueberrepraesentation schwieriger Faelle. Ein Agent, der "alle Titel finden" soll, kann sich nicht selbst bewerten. Bisher 13 Gold-Labels (Zelle 05: 10 per foobar bestaetigt, 1 anderer Ort, 2 fehlend) + 10 Nutzerangaben (Zelle 15: 3 richtige Datei, 7 unbekannt). Schichten und Pilot-Vorgehen: Zelle 23 (Entscheidung 12.11.2026).
 
 ### Rule of Three (Konfidenz bei null Fehlern)
 **Definition:** Werden in n unabhaengigen Faellen 0 Fehler beobachtet, liegt die wahre Fehlerrate mit 95 % Konfidenz unter ca. 3/n.
-**Projektbezug:** Bestimmt den Umfang des Gold-Sets fuer das Ziel "Precision 100 %": n = 100 belegt Fehlerrate < 3 %, n = 300 belegt < 1 %. Endgueltiger Umfang nach EDA. Beispiel Zelle 05: 0 Fehler in 11 foobar-Vergleichen belegen nur Fehlerrate < 27 % -> bestaetigt den Mechanismus, nicht die Garantie.
+**Projektbezug:** Bestimmt den Umfang des Gold-Sets fuer das Ziel "Precision 100 %": n = 60 belegt < 5 %, n = 100 < 3 %, n = 300 < 1 %. Beispiele: 0 Fehler in 11 foobar-Vergleichen (Zelle 05) -> nur < 27 %; 0 Lesefehler in 5.236 Dateien (Zelle 12) -> < 0,06 %. Gold-Schichten (Zelle 23): fuer < 3 % in allen Schichten waeren 835 Labels noetig.
 
 ### Active Learning / Human in the Loop
 **Definition:** Das System legt unsichere Faelle einem Menschen vor; dessen Entscheidungen werden als neue Labels gespeichert und verbessern Modell bzw. Testmenge.
-**Projektbezug:** Nutzerbestaetigungen zu "Vorschlaegen" im UI erweitern das Gold-Set. Bewertung trotzdem nur auf festem Testset (sonst keine Vergleichbarkeit der Varianten).
+**Projektbezug:** Nutzerbestaetigungen zu "Vorschlaegen" im UI erweitern das Gold-Set. Bewertung trotzdem nur auf festem Testset (sonst keine Vergleichbarkeit der Varianten). Erste Anwendung: Nutzerangaben zu 10 Beispielen (Zelle 15) als private Gold-Labels.
 
 ### Drei-Wege-Vergleich (Three-Way Merge)
 **Definition:** Zwei geaenderte Fassungen werden gegen ihren gemeinsamen Ausgangsstand (Basis) verglichen. Nur so ist unterscheidbar, wer was geaendert hat; Aenderung auf beiden Seiten = Konflikt.
@@ -65,7 +65,7 @@ Pfade, Ordner-, Datei-, Titel- oder Interpretennamen; Beispiele sind generisch.
 
 ### src-Layout und Editable Install
 **Definition:** Paketcode liegt unter `src/<paket>/` (PyPA-Empfehlung); `pip install -e .` installiert das Paket als Verweis auf den Projektordner. Aenderungen im Code wirken sofort, Imports funktionieren ueberall gleich (`from playlist_agent import ...`), ohne `sys.path`-Manipulation.
-**Projektbezug:** `pyproject.toml` (PEP 621), Paket `playlist-agent` 0.1.0; `__init__.py` macht Ordner zu regulaeren Paketen.
+**Projektbezug:** `pyproject.toml` (PEP 621), Paket `playlist-agent` 0.1.0; `__init__.py` macht Ordner zu regulaeren Paketen. Neue Abhaengigkeit: nach Eintrag in `dependencies` erneut `pip install -e ".[dev]"`; vorher Datei speichern (Befund 11.11.: ungespeicherte Aenderung -> Paket nicht installiert).
 
 ### `.gitignore`: Ordner-Regeln + Dateityp-Sicherheitsnetz, "letzte Regel gewinnt"
 **Definition:** Git wertet `.gitignore` von oben nach unten aus; bei mehreren passenden Regeln gilt die letzte. Negationen (`!`) holen Dateien zurueck, aber nicht aus ausgeschlossenen Elternordnern (daher `!data/**/` vor `!data/**/.gitkeep`).
@@ -73,7 +73,7 @@ Pfade, Ordner-, Datei-, Titel- oder Interpretennamen; Beispiele sind generisch.
 
 ### Git-Clean-Filter (nbstripout) und seine Grenze
 **Definition:** Ein Filter, den Git beim Uebertragen ins Repository auf Dateien anwendet. Arbeitskopie bleibt unveraendert, nur der gespeicherte Stand wird bereinigt.
-**Projektbezug:** Notebook-Ausgaben werden beim Commit entfernt. Nachweis: lokal 2 Treffer "Projektwurzel:", im Commit 1 (nur Quellcode). Filter-Definition liegt in `.git/config` (pro Rechner!) -> auf dem Medion erneut `nbstripout --install`. **Grenze (Befund 07.11.):** Code- und Markdown-Zellen werden vollstaendig committet; echte Pfade im Code waren dadurch oeffentlich -> Regel: echte Werte nur in privaten Eingabedateien (`data/`), Pruefung vor jedem Commit. Hinweis (09.11.): Git sieht nur den gespeicherten Notebook-Stand; ungespeicherte Zellen in VS Code fehlen im Commit (Befund Commit e3781ab).
+**Projektbezug:** Notebook-Ausgaben werden beim Commit entfernt. Nachweis: lokal 2 Treffer "Projektwurzel:", im Commit 1 (nur Quellcode). Filter-Definition liegt in `.git/config` (pro Rechner!) -> auf dem Medion erneut `nbstripout --install`. **Grenze (Befund 07.11.):** Code- und Markdown-Zellen werden vollstaendig committet; echte Pfade im Code waren dadurch oeffentlich -> Regel: echte Werte nur in privaten Eingabedateien (`data/`), Pruefung vor jedem Commit. Hinweis (09.11.): Git sieht nur den gespeicherten Notebook-Stand; ungespeicherte Zellen in VS Code fehlen im Commit (Befund Commit e3781ab). `git status` zeigt ein Notebook mit nur geaenderten Ausgaben als ` M`, `git diff` dagegen leer (Filter angewendet).
 
 ### Inhaltsadressierte Speicherung (Git-Objekte)
 **Definition:** Git speichert Inhalte unter ihrem Hash; identische Inhalte existieren nur einmal (Blobs fuer Dateien, Trees fuer Ordner).
@@ -89,15 +89,15 @@ Pfade, Ordner-, Datei-, Titel- oder Interpretennamen; Beispiele sind generisch.
 
 ### Snapshot mit kryptografischer Pruefsumme (SHA-256)
 **Definition:** Eine Pruefsumme ist ein Fingerabdruck des Dateiinhalts: Schon ein geaendertes Bit ergibt eine voellig andere SHA-256-Summe. Gleiche Summe von Original und Kopie belegt eine bitgenaue Kopie. Ein Manifest (Liste aus Pfad, Groesse, Pruefsumme, Aenderungsdatum) dokumentiert den Stand zum Zeitpunkt des Snapshots.
-**Projektbezug:** 380 Dateien (167 Crates, 213 Playlists, 2,8 MB) vom Stick nach `data/raw` kopiert, 380/380 bitgenau identisch. `shutil.copy2` erhaelt das Aenderungsdatum (relevant fuer Sync-Analyse). Manifest privat in `data/raw/snapshot_manifest.csv`; im Repo nur Zaehlstatistik `01_07_snapshot_pruefung.csv`. Schutz: Abbruch, falls `data/raw` schon Dateien enthaelt (P7). Ergaenzungen 09.11. mit eigenem Manifest, wiederholbar (vorhandene Kopie nur vergleichen, nie ueberschreiben): `database V2` (Zelle 10, 1 Datei), restlicher Serato-Ordner (Zelle 12, 215 Dateien, 1.124.467 Byte, alle bitgenau; Byte-Summe vorab aus Zelle 11 berechnet und bestaetigt).
+**Projektbezug:** 380 Dateien (167 Crates, 213 Playlists, 2,8 MB) vom Stick nach `data/raw` kopiert, 380/380 bitgenau identisch. `shutil.copy2` erhaelt das Aenderungsdatum (relevant fuer Sync-Analyse). Manifest privat in `data/raw/snapshot_manifest.csv`; im Repo nur Zaehlstatistik `01_07_snapshot_pruefung.csv`. Schutz: Abbruch, falls `data/raw` schon Dateien enthaelt (P7). Ergaenzungen 09.11. mit eigenem Manifest, wiederholbar (vorhandene Kopie nur vergleichen, nie ueberschreiben): `database V2` (Zelle 10, 1 Datei), restlicher Serato-Ordner (Zelle 12, 215 Dateien, 1.124.467 Byte, alle bitgenau; Byte-Summe vorab aus Zelle 11 berechnet und bestaetigt). Dubletten-Suche (Notebook 02 Zelle 21): SHA-256 als Beleg fuer bitgleichen Inhalt.
 
 ### Unabhaengige Messwege zur Plausibilisierung
 **Definition:** Dieselbe Groesse wird mit zwei voneinander unabhaengigen Werkzeugen gemessen; Uebereinstimmung erhoeht das Vertrauen, Abweichung zeigt einen Fehler in mindestens einem Messweg.
-**Projektbezug:** PowerShell-Index v2 (06.11.) und Python (07.11., Zellen 06/08) stimmen vollstaendig ueberein: 7.386 Dateien, 128,4 GB, 310 AppleDouble, 5.236 echte Audiodateien (4.924 mp3 + 266 wav + 46 aif), 110 `.m3u`, 36 `.wpl`. Folgerungen: Stick seit 06.11. unveraendert; `.aiff`/`.flac`/`.m4a` kommen nicht vor -> Positivliste der Audio-Endungen in `config.yaml` belegt vollstaendig.
+**Projektbezug:** PowerShell-Index v2 (06.11.) und Python (07.11., Zellen 06/08) stimmen vollstaendig ueberein: 7.386 Dateien, 128,4 GB, 310 AppleDouble, 5.236 echte Audiodateien (4.924 mp3 + 266 wav + 46 aif), 110 `.m3u`, 36 `.wpl`. Gegenbeispiel (Zelle 14): Serato-Dauer und Datei-Dauer widersprechen sich bei 72 Paaren; mit nur zwei Messwegen ist nicht entscheidbar, welcher falsch ist -> dritter Messweg (foobar) in Phase 4.
 
 ---
 
-## Phase 1 – EDA (07.11.2026)
+## Phase 1 – EDA (07.–12.11.2026)
 
 ### pandas 3: Datentyp `str` fuer Textspalten
 **Definition:** Ab pandas 3 werden Textspalten standardmaessig mit einem eigenen String-Datentyp (`str`) gespeichert statt mit dem allgemeinen Typ `object` (pandas 2).
@@ -105,27 +105,27 @@ Pfade, Ordner-, Datei-, Titel- oder Interpretennamen; Beispiele sind generisch.
 
 ### Rechtsschiefe Verteilung: Median statt Mittelwert, logarithmische Achse
 **Definition:** Bei rechtsschiefen Verteilungen (viele kleine, wenige sehr grosse Werte) zieht der Mittelwert nach oben; der Median beschreibt den typischen Wert robuster. In Histogrammen draengt eine lineare Achse die Masse in den ersten Balken; logarithmische Klassen geben jeder Groessenordnung gleich viel Platz.
-**Projektbezug:** Tracks je Crate: Median 13, Mittelwert 47,4, Maximum 1.330; lineare Achse legte 140 von 167 Crates in den ersten Balken -> Grafik `02_02_tracks_je_crate.png` mit log-Achse.
+**Projektbezug:** Tracks je Crate: Median 13, Mittelwert 47,4, Maximum 1.330; lineare Achse legte 140 von 167 Crates in den ersten Balken -> Grafik `02_02_tracks_je_crate.png` mit log-Achse. Log-Achse auch fuer Dauer-Abweichungen (Zelle 13); Beschriftung mit `FuncFormatter` als Dezimalzahl, da die Schrift keine Hochzeichen enthaelt.
 
 ### Mehrfachzugehoerigkeit: eindeutige Pfade statt Eintraege zaehlen
 **Definition:** Kommt dasselbe Objekt in mehreren Gruppen vor, verzerrt die Zaehlung je Eintrag die Statistik (ein Fehler wird mehrfach gezaehlt). Fuer Aussagen ueber Objekte wird je eindeutigem Objekt gezaehlt, fuer Aussagen ueber Gruppen je Gruppe.
-**Projektbezug:** 7.915 Crate-Eintraege, aber 2.754 eindeutige Pfade (jeder Pfad im Schnitt in 2,9 Crates). Song-Ebene (eindeutige Pfade) = technische Kernmetrik; Playlist-Ebene (je Crate: vollstaendig wiederherstellbar?) = Nutzersicht. Einschraenkung: Song ist nicht gleich Pfad (Dubletten) -> Inhalts-Hash in Zelle 09.
+**Projektbezug:** 7.915 Crate-Eintraege, aber 2.754 eindeutige Pfade (jeder Pfad im Schnitt in 2,9 Crates). Song-Ebene (eindeutige Pfade) = technische Kernmetrik; Playlist-Ebene (je Crate: vollstaendig wiederherstellbar?) = Nutzersicht (Zelle 10). Einschraenkung: Song ist nicht gleich Pfad (Dubletten, Zelle 21).
 
 ### UTF-16 im Texteditor: scheinbare Leerzeichen
 **Definition:** UTF-16 speichert jedes Zeichen in 2 Byte; bei lateinischen Buchstaben ist ein Byte `00`. Ein Editor, der die Datei als 1-Byte-Text liest, zeigt `00` als Luecke ("A b c"). Kombinierende Zeichen (z. B. Trema U+0308) werden dabei oft unsichtbar ("a" statt "ä"). Feldkennungen wie `talb` erscheinen als scheinbar chinesische Zeichen.
 **Projektbezug:** Stichprobe (07.11.): Editor zeigte in einer Crate einen Umlaut als "a", Codepoint-Analyse belegt `a` + U+0308 (NFD). Gleicher Effekt in Serato `database V2`. Lehre: Kodierungsfragen nur mit Codepoint-Analyse beantworten, nie per Augenschein.
 
 ### Trefferstufen-Kaskade (Stufen 1-4) und Akzent-Entfernung als Diagnose
-**Definition:** Je Crate-Pfad wird gegen alle Index-Pfade nacheinander geprueft; die erste zutreffende Stufe zaehlt: 1 Zeichen-identisch; 2 identisch nach NFC-Normalisierung beider Seiten; 3 identisch nach Akzent-Entfernung (NFKD, kombinierende Zeichen entfernt, Kleinschreibung, "ä" -> "a"); 4 kein Treffer. "Treffer" bedeutet Gleichheit der Zeichenkette, nicht Inhaltsgleichheit (V2).
-**Projektbezug:** Notebook 02 Zelle 03, alle 2.754 eindeutigen Pfade vollstaendig geprueft: Stufe 1 2.075 (75,3 %), Stufe 2 275 (10,0 %), Stufe 3 0, Stufe 4 404 (14,7 %). Belegte Aussage: Unter den Pfaden, die bis auf Akzente identisch sind, gibt es keinen verlorenen Umlaut. Nicht belegt: verlorene Umlaute in zusaetzlich verschobenen Pfaden (landen in Stufe 4). Fehlquote je Klasse: ASCII 18,8 %, NFC 7,5 %, NFD 8,3 % -> Hauptursache der Fehltreffer nicht Kodierung. Evidenz je Stufe in Zelle 04, unabhaengige Bestaetigung durch foobar in Zelle 05.
+**Definition:** Je Pfad wird gegen alle Index-Pfade nacheinander geprueft; die erste zutreffende Stufe zaehlt: 1 Zeichen-identisch; 2 identisch nach NFC-Normalisierung beider Seiten; 2b zusaetzlich ohne Gross-/Kleinschreibung (Windows/FAT32); 3 identisch nach Akzent-Entfernung; 4 kein Treffer. "Treffer" bedeutet Gleichheit der Zeichenkette, nicht Inhaltsgleichheit (V2).
+**Projektbezug:** Crates (Zelle 03, 2.754 Pfade): Stufe 1 2.075 (75,3 %), Stufe 2 275 (10,0 %), Stufe 3 0, Stufe 4 404 (14,7 %). Uebrige Quellen (Zelle 17, 10.289 Eintraege): Stufe 1 6.304, Stufe 2 43, Stufe 2b 0, Stufe 3 0, Stufe 4 3.942. Gross-/Kleinschreibung und Akzente spielen in den Daten keine Rolle.
 
 ### Unabhaengige Referenz durch Fremdsystem (foobar-Test)
 **Definition:** Ergebnisse des eigenen Codes werden gegen ein System geprueft, das den Code nicht kennt; Uebereinstimmung belegt die Logik ohne Zirkelschluss.
-**Projektbezug:** 13 geschichtete Stichproben-Songs (SEED 42): foobar schrieb fuer 11 Songs die Pfade selbst. 11/11 identisch mit dem Referenzpfad des Codes; NFD-Faelle (3) nach NFC gleich, Fall an anderem Ort (1) weder exakt noch nach NFC gleich -> Stufen 1, 2 und "anderer Ort" unabhaengig bestaetigt. 2 Songs auch per Handsuche nicht auffindbar.
+**Projektbezug:** 13 geschichtete Stichproben-Songs (SEED 42): foobar schrieb fuer 11 Songs die Pfade selbst. 11/11 identisch mit dem Referenzpfad des Codes -> Stufen 1, 2 und "anderer Ort" unabhaengig bestaetigt. Zielformat foobar durch Daten belegt (Zelle 17): Asus 197/197 absolut `D:\`, Medion 322/325 absolut `E:\` -> eigener Test relativer Pfade unnoetig (Entscheidung 12.11.2026).
 
 ### Zeichenkodierung von Playlist-Dateien: ANSI (.m3u) vs. UTF-8 mit BOM (.m3u8)
 **Definition:** ANSI/cp1252 speichert jedes Zeichen in 1 Byte (ca. 250 darstellbare Zeichen); UTF-8 nutzt 1-4 Byte und kann alle Unicode-Zeichen darstellen. Ein BOM (Byte Order Mark, `EF BB BF`) am Dateianfang kennzeichnet UTF-8.
-**Projektbezug:** foobar (Asus, Zelle 05): `.m3u` = cp1252, kein BOM, keine Kopfzeile, CRLF, `ä` = `e4`; `.m3u8` = UTF-8 mit BOM, Kopfzeile `#`, CRLF, `ä` = `c3 a4`. Folge fuer den Writer: Format bestimmt zwingend die Kodierung; UTF-8 in `.m3u` erzeugt Zeichensalat und tote Eintraege. Wahl des Ausgabeformats = Design-Entscheidung (Phase 3).
+**Projektbezug:** foobar (Asus, Zelle 05): `.m3u` = cp1252, kein BOM, keine Kopfzeile, CRLF; `.m3u8` = UTF-8 mit BOM, Kopfzeile `#`, CRLF. Uebrige Quellen (Zelle 16): ASCII, UTF-8 ohne BOM, "cp1252" gemischt, kein BOM in keiner Datei. Grenze: "cp1252" heisst nur "nicht als UTF-8 lesbar"; ob MacRoman o. Ae. vorliegt, ist offen (bisher keine Hinweise: Stufe 3 = 0).
 
 ### pandas: `None` wird zu `NaN`, `NaN` gilt als wahr
 **Definition:** Fehlende Werte in DataFrame-Spalten werden als `NaN` (Typ `float`) gespeichert, auch wenn `None` eingetragen wurde. In Python ist `NaN` "wahr" (`bool(float('nan')) == True`); `if wert:` erkennt fehlende Werte daher nicht. Korrekt: `pd.notna(wert)` / `pd.isna(wert)`.
@@ -133,19 +133,63 @@ Pfade, Ordner-, Datei-, Titel- oder Interpretennamen; Beispiele sind generisch.
 
 ### Kategorisierung ueber Rechenvorschrift statt Ursachenbehauptung
 **Definition:** Kategorien werden ueber das definiert, was der Code berechnet (z. B. "Name genau 1x im Index"), nicht ueber vermutete Ursachen ("verschoben", "geloescht"). Ursachen werden ausdruecklich als Hypothesen gekennzeichnet. Namensgleichheit belegt keine Inhaltsgleichheit.
-**Projektbezug:** Zelle 06, 404 Fehltreffer, Schluessel Kleinschreibung(NFC(Dateiname)) gegen 5.236 Audiodateien: a Name 1x im Index, anderer Ordner 166 (41,1 %); b mehrfach 0; c erst nach Mojibake-Reparatur 0; d Name nicht im Index, Ordner vorhanden 8 (2,0 %); e Name nicht im Index, Ordner nicht vorhanden 230 (56,9 %). Zusatzmerkmal "gleichnamiger Ordner anderswo": 25, alle in a (15,1 % von a), in d/e 0. Validierung gegen Handsuche 3/3. Ueber Namensgleichheit Kandidat fuer 2.516 von 2.754 Pfaden (91,4 %); fuer 238 (8,6 %) kein Kandidat -> Metadatenquelle noetig (Serato `database V2`).
+**Projektbezug:** Zelle 06, 404 Fehltreffer: a Name 1x im Index, anderer Ordner 166; b mehrfach 0; c Mojibake 0; d Name nicht im Index, Ordner vorhanden 8; e Name nicht im Index, Ordner nicht vorhanden 230. Validierung gegen Handsuche 3/3. **Korrektur (Zelle 25):** "Ordner nicht vorhanden" war ungenau – 229 der 238 d/e-Pfade zeigen in Ordner, die heute 0-Byte-Dateien sind. Bestaetigt den Wert der Regel: Die Ursachen-Hypothese "geloescht" haette in die Irre gefuehrt.
 
 ### pandas 3: `astype(str)` behaelt `NaN`
-**Definition:** In pandas 2 wandelte `astype(str)` fehlende Werte in den Text `"nan"` um. In pandas 3 bleibt ein fehlender Wert auch nach `astype(str)` fehlend (`NaN`, Typ `float`). Code, der danach jeden Wert als Zeichenkette behandelt (z. B. `"/" in wert`), bricht mit `TypeError: argument of type 'float' is not iterable`. Robust: Typ je Wert pruefen (`isinstance(wert, str)`) oder fehlende Werte vorher explizit entfernen (`dropna`).
-**Projektbezug:** Fehler im Privacy-Check (08.11.) beim Einlesen aller Zellen der Gold-CSV-Dateien (leere Zellen). Behoben durch `isinstance(wert, str)`. Ergaenzt den Eintrag "None wird zu NaN": fehlende Werte sind in pandas 3 ueber alle Umwandlungen hinweg `float`, nie Text.
+**Definition:** In pandas 2 wandelte `astype(str)` fehlende Werte in den Text `"nan"` um. In pandas 3 bleibt ein fehlender Wert auch nach `astype(str)` fehlend (`NaN`, Typ `float`). Robust: Typ je Wert pruefen (`isinstance(wert, str)`) oder fehlende Werte vorher explizit entfernen (`dropna`).
+**Projektbezug:** Fehler im Privacy-Check (08.11.) beim Einlesen der Gold-CSV-Dateien (leere Zellen). Behoben durch `isinstance(wert, str)`.
+
+### pandas 3: `groupby().apply()` ohne Gruppierungsspalte
+**Definition:** Ab pandas 3 erhaelt die an `apply` uebergebene Funktion die Gruppierungsspalte nicht mehr (pandas 2: mit Warnung noch enthalten). Folgecode, der die Spalte erwartet, bricht mit `KeyError`.
+**Projektbezug:** Zelle 11, geschichtete Stichprobe je Endung. Loesung: `df.groupby("endung").sample(n=40, random_state=SEED)` – behaelt alle Spalten; n = 40 zulaessig, da kleinste Gruppe (aif) 46 Dateien.
 
 ### Privacy-Check vor dem Commit (Abgleich gegen private Begriffsliste)
-**Definition:** Automatische Pruefung der zum Commit vorgemerkten Dateien (Staging-Bereich, `git show :<pfad>`) gegen eine Liste privater Begriffe. Die Liste wird zur Laufzeit aus privaten Quellen erzeugt und selbst nie committet. Treffer -> Exit-Code 1, Commit wird nicht ausgefuehrt. Zwei Arten von Ausnahmen: erlaubte Begriffe (bewusst entschiedene Ausnahme, werden vor der Pruefung aus dem Text entfernt) und generische Begriffe (allgemeine Woerter, die nur zufaellig auch als privater Name vorkommen, werden aus der Begriffsliste entfernt). Mindestlaenge der Begriffe begrenzt Fehlalarme durch kurze Allerweltswoerter.
-**Projektbezug:** `python -m playlist_agent.privacy_check`; Quellen: Index-Pfade, Crate-Namen, private Eingabedateien in `data/gold`, `PRIVATE_TERMS` aus `.env`; erlaubt: `ALLOWED_TERMS` (Hostname, P10); generisch: `GENERISCHE_BEGRIFFE = {"playlist", "software"}`; Mindestlaenge 8. Fehlalarme bisher: "playlist" (08.11., Ordnername auf dem Stick, zugleich Fachbegriff) und "software" (09.11., 1 Fundstelle im Lizenztext von Notebook 01, Begriff in 4 Index-Zeilen) -> jeweils belegt und als generisch eingetragen. Abnahmelaeufe: c2c0ee7 (3 Dateien, 6.572 Begriffe), f93c1be (6 Dateien, 6.571 Begriffe), je 0 Treffer. Grenze 1: erkennt nur Begriffe aus der Liste -> ergaenzt, ersetzt aber nicht die Regel "echte Werte nur in privaten Eingabedateien". Grenze 2: 2 Fehlalarme in 2 Laeufen mit neuen Dateien -> manuelle Liste skaliert schlecht; Alternativen (Woerterbuch-Filter, nur Mehrwort-Segmente) in Phase 3 bewerten.
+**Definition:** Automatische Pruefung der zum Commit vorgemerkten Dateien (Staging-Bereich, `git show :<pfad>`) gegen eine Liste privater Begriffe. Die Liste wird zur Laufzeit aus privaten Quellen erzeugt und selbst nie committet. Treffer -> Exit-Code 1, Commit wird nicht ausgefuehrt. Ausnahmen: erlaubte Begriffe (bewusst entschieden, vor der Pruefung aus dem Text entfernt) und generische Begriffe (allgemeine Woerter, aus der Begriffsliste entfernt). Mindestlaenge begrenzt Fehlalarme.
+**Projektbezug:** `python -m playlist_agent.privacy_check`; Quellen: Index-Pfade, Crate-Namen, private Eingabedateien in `data/gold`, `PRIVATE_TERMS` aus `.env`; erlaubt: `ALLOWED_TERMS` (Hostname, P10); generisch: `{"playlist", "software"}`; Mindestlaenge 8. Binaerdateien (PNG) werden uebersprungen. Seit 08.11. vor jedem Commit, 0 Treffer in allen Abnahmelaeufen. Grenzen: erkennt nur Begriffe aus der Liste; 2 Fehlalarme in 2 Laeufen mit neuen Dateien -> Alternativen (Woerterbuch-Filter, Mehrwort-Segmente) in Phase 3 bewerten.
 
 ### Mengenvergleich von Playlists: Relation und Jaccard-Index
-**Definition:** Zwei Playlists werden als Mengen von Pfaden A und B verglichen (Reihenfolge und Mehrfacheintraege ignoriert, Pfade vorher NFC-normalisiert). Relation: identisch (A = B), Teilmenge (B ⊂ A, Eintraege entfernt), Obermenge (B ⊃ A, Eintraege hinzugefuegt), Ueberlappung (gemeinsame und je eigene Eintraege), disjunkt. Jaccard-Index J = |A ∩ B| / |A ∪ B|, Wertebereich 0 (nichts gemeinsam) bis 1 (identisch). Paarbildung ueber einen Schluessel (hier Name), bei mehreren Kandidaten der mit hoechstem J.
-**Projektbezug:** Notebook 02 Zelle 07: Serato-Ordner `Crates` (167, Stand 2009-2016) vs. `Subcrates` (203, Stand 2021, Hierarchie im Namen mit `%%`), Paar ueber letzten Namensteil. Ergebnis je alter Crate: identisch 97, Subcrate Teilmenge 8 (J-Median 0,71), Obermenge 3 (0,72), Ueberlappung 3 (0,58), kein Namenspartner 56; 91 Subcrates ohne Partner. Pfadebene (NFC): nur alte Crates 179 (20,7 % auf dem Stick), nur Subcrates 765 (88,5 %), beide 2.380 (89,7 %). Grundlage fuer Entscheidung d (09.11.2026). Gleiches Verfahren spaeter fuer `_mac`-Varianten und Sync-Konflikte (P6).
+**Definition:** Zwei Playlists werden als Mengen von Pfaden A und B verglichen (Reihenfolge und Mehrfacheintraege ignoriert, Pfade NFC-normalisiert). Relation: identisch, Teilmenge, Obermenge, Ueberlappung, disjunkt. Jaccard-Index J = |A ∩ B| / |A ∪ B|, 0 (nichts gemeinsam) bis 1 (identisch).
+**Projektbezug:** Zelle 07: Serato `Crates` (167, 2009-2016) vs. `Subcrates` (203, 2021). Je alter Crate: identisch 97, Teilmenge 8, Obermenge 3, Ueberlappung 3, kein Namenspartner 56; 91 Subcrates ohne Partner. Pfade: nur Subcrates 765 (88,5 % auf dem Stick). Grundlage fuer Entscheidung d (09.11.2026). Gleiches Verfahren spaeter fuer `_mac`-Varianten und Sync-Konflikte (P6).
+
+### Namenskollision im Notebook-Kernel
+**Definition:** Alle Zellen eines Notebooks teilen einen Namensraum. Definiert eine spaetere Zelle denselben Namen neu (Funktion, Schleifenvariable), rechnet eine fruehere Zelle bei erneutem Einzelaufruf mit der neuen Bedeutung – oft ohne Fehlermeldung.
+**Projektbezug:** Notebook 02 (11.11.): `ordner` (Funktion Zelle 06, Schleifenvariable Zelle 07) und `schluessel` (Zelle 06 vs. Zelle 08). Ergebnisse bei "Run All" korrekt, bei Einzelaufruf von Zelle 06 still falsch. Behoben durch eindeutige Namen (`quelle_ordner`, `pfad_schluessel`). Strukturelle Loesung: Funktionen nach `src/` (Phase 3).
+
+### Bootstrap-Konfidenzintervall und Abhaengigkeit der Einheiten
+**Definition:** Aus der Stichprobe wird vielfach mit Zuruecklegen neu gezogen; die Verteilung der Kennzahl ueber alle Wiederholungen liefert das Intervall (95 %: 2,5- bis 97,5-Perzentil). Voraussetzung: unabhaengige Einheiten. Sind Einheiten abhaengig (teilen sie Daten), wird das Intervall zu schmal.
+**Projektbezug:** Zelle 10: mittlerer Anteil sicher je Crate 93,2 % (KI 90,1-96,0 %, 10.000 Wiederholungen). Grenze: Crates teilen Pfade (im Mittel 2,9 Crates je Pfad) -> Intervall vermutlich zu schmal.
+
+### Probelauf mit Hochrechnung vor teuren Operationen
+**Definition:** Vor einer langen oder riskanten Operation wird eine geschichtete Stichprobe ausgefuehrt; gemessen werden Laufzeit je Einheit, Fehlerrate und Nutzen. Hochrechnung je Schicht: mittlere Zeit x Anzahl. Entscheidung ueber den Vollauf auf Basis der Messung.
+**Projektbezug:** Zelle 11: 120 Dateien, 0 Fehler, Hochrechnung 4,4 min; Vollauf Zelle 12: gemessen 4,3 min, 0 Fehler in 5.236 Dateien. Vorbehalt Cache bestaetigte sich nicht.
+
+### Vorauswahl ueber eine notwendige Bedingung
+**Definition:** Ist eine billige Eigenschaft notwendig fuer das gesuchte Merkmal, wird zuerst nach ihr gefiltert und nur der Rest teuer geprueft. Kein Treffer geht verloren, weil Faelle ohne die Eigenschaft das Merkmal nicht haben koennen.
+**Projektbezug:** Dubletten (Zellen 20-21): bitgleicher Inhalt setzt gleiche Dateigroesse voraus -> nur 190 von 5.236 Dateien (2,9 GB statt 128,4 GB) gehasht, 19 s. Ergebnis: 45 bitgleiche Paare; bei 15 von 48 Mehrfach-Kandidaten alle bitgleich.
+
+### Lizenzpruefung von Abhaengigkeiten
+**Definition:** Jede Abhaengigkeit bringt ihre Lizenz mit. Copyleft-Lizenzen (GPL) verlangen bei Weitergabe des Gesamtwerks dieselbe Lizenz; permissive Lizenzen (MIT, BSD) nicht. Pruefung vor Aufnahme: Lizenzfeld bzw. Classifier in den Paket-Metadaten.
+**Projektbezug:** mutagen 1.48.1 = GPL-2.0-or-later, Projekt = MIT -> ersetzt durch tinytag (MIT, reines Python, ohne Abhaengigkeiten, nur lesend; Entscheidung 11.11.2026). Zusatznutzen: Bibliothek kann Musikdateien nicht veraendern -> stuetzt P1 technisch. `pip show` zeigt bei tinytag ein leeres `License`-Feld; Lizenz steht im Classifier.
+
+### Kalibrierung eines Inhaltsbelegs an bekannt gleichen Paaren (empirische Verteilungsfunktion)
+**Definition:** Bevor ein Merkmal (z. B. Dauer) als Beleg dient, wird an Paaren gemessen, die nachweislich zusammengehoeren, wie stark es dort streut. Die empirische Verteilungsfunktion zeigt fuer jede Abweichung x den Anteil der Paare mit Abweichung <= x. Erst daraus ist eine Toleranz begruendbar.
+**Projektbezug:** Zelle 13: Referenz (Pfad = Datei, n = 2.264) 92,1 % <= 0,1 s, 96,6 % <= 1 s; Namenskandidaten (n = 87) 98,9 % <= 1 s. Zelle 14: 72 Ausreisser > 2 s, alle mp3, kein einheitlicher Faktor -> Dauer ist starker, aber nicht fehlerfreier Beleg; kein hartes Veto bis Phase 4.
+
+### Kanonisierung fremder Pfadformen und Pfadende-Abgleich
+**Definition:** Eintraege verschiedener Quellen werden vor dem Abgleich in eine gemeinsame Form gebracht: URL dekodieren und Datentraegerpraefix entfernen, Laufwerk entfernen und Trenner vereinheitlichen, relative Pfade gegen den Ordner der Playlist aufloesen. Scheitert der Abgleich, wird verglichen, wie viele Pfadteile von hinten uebereinstimmen.
+**Projektbezug:** Zellen 16-19: 3 Pfadformen (URL 495, Windows absolut 2.747, relativ 7.047). Fremde Windows-Pfade (Laufwerke C:, D:, I:, Q:) 0/2.218 exakte Treffer, aber 1.750 mit eindeutigem Kandidaten bei gleichem Ordner + Datei -> moegliche deterministische Regel "eindeutiges Pfadende >= 2 Teile" (Precision am Gold-Set). Methodischer Fehler dokumentiert: Kennzahl "Praefix-Paare je Datei" durch unterschiedlich viele gleiche Endteile verfaelscht -> keine Aussage.
+
+### Deterministische Namenssuche vs. lernende Verfahren (Abgrenzung)
+**Definition:** Eine Suche nach eindeutigem Dateinamen oder Pfadende ist ebenso deterministisch wie der exakte Pfadvergleich (vgl. Suche im Explorer). Der Raum fuer Fuzzy-, ML- und Agent-Verfahren beginnt erst dort, wo der Name mehrdeutig ist oder fehlt.
+**Projektbezug:** Korrektur 12.11.2026 (Hinweis Projektinhaber, Faelle C1-C7): Namenssuche loest 166 Crate-Pfade und 3.000 Eintraege uebriger Quellen. Echter Raum fuer lernende Verfahren: 9 Crate-Pfade, 385 Eintraege ohne Namenskandidaten, 33 mit verschiedenen Mehrfach-Kandidaten.
+
+### Gruppierter Split gegen Leakage und Obergrenze je Gruppe in Stichproben
+**Definition:** Liegen aehnliche Faelle derselben Gruppe (hier Ordner) in Training und Test, kann ein Modell Gruppenmuster auswendig lernen und wirkt besser als es ist (Leakage). Gruppierter Split: jede Gruppe nur in einem Teil. Analog bei Stichproben: Obergrenze je Gruppe, damit eine grosse Gruppe die Messung nicht dominiert.
+**Projektbezug:** Zelle 23: in schweren Schichten stellt ein Ordner 41-49 % der Pfade, die 5 groessten 72-90 % (K1 exakt: 5,6 % bzw. 15 %). Entscheidung 12.11.2026: Split gruppiert nach Ordner; Gold-Set mit Pilot (20 Labels, Zeit je Label messen) und Obergrenze je Ordner.
+
+### Datenverlust erkennen: 0-Byte-Datei an Stelle eines Ordners
+**Definition:** Ein Verzeichnis, an dessen Stelle eine leere Datei gleichen Namens steht, ist fuer jeden Pfad darunter unerreichbar. Nachweis ueber Dateityp (PowerShell `Mode` ohne `d`) und Groesse 0; im Datei-Index sind solche Faelle nur als 0-Byte-Datei sichtbar, echte leere Ordner gar nicht.
+**Projektbezug:** Zelle 25 (Entdeckung durch Pruefung des Projektinhabers, Fall C10): 23 Dateien mit 0 Byte, davon 10 an Stelle von Album-Ordnern; betroffen 229 von 238 Crate-Pfaden ohne Namenskandidaten (96,2 %) und 509 von 894 Eintraegen uebriger Quellen. Hypothese: Dateisystemschaden. Kein Zuordnungsproblem, sondern Datenverlust -> Bericht "Album beschaedigt/verloren"; Wiederherstellung nur aus Sicherungen (regelmaessige Backups vorhanden, Angabe Projektinhaber) -> Bonus "Suche auf Backup-Datentraegern" gewinnt an Wert.
 
 ---
 
