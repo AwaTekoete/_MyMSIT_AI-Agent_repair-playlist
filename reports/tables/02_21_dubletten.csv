@@ -1,0 +1,11 @@
+kennzahl,wert
+Laufzeit Hash (s),19.3
+Durchsatz (MB/s),150.2
+Dubletten-Gruppen (gleicher Hash),45.0
+Dateien in Dubletten-Gruppen,90.0
+überzählige Kopien,45.0
+Gruppen mit gleichem Namen,32.0
+Gruppen mit verschiedenen Namen,13.0
+MB überzählig,959.8
+AM-Einträge (Zelle 18),48.0
+AM: alle Kandidaten bitgleich,15.0
