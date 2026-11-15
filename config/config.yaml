@@ -42,3 +42,12 @@ matching:
   # Schwellen werden in Phase 4 datenbasiert kalibriert (Precision = 100 %).
   # Bewusst leer: keine Annahmen.
   {}
+
+resolver:
+  # Klasse "sicher" nur, wo die Identitaet ohne Nutzer belegt ist (P5).
+  # Entscheidungen 12.11.2026 (Kaskade 4.3a) und 14.11.2026 (Regel a).
+  pfadende_sicher: true     # eindeutiges Pfadende mit >= min_endteile Teilen
+  min_endteile: 2
+  name_sicher: false        # Gold NB04 Z.10/11: 142/142 richtig, obere 95-%-Grenze 2,09 % -> keine 100 %
+  bitgleich_sicher: true    # mehrere Kandidaten, alle mit gleichem SHA-256
+

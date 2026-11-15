@@ -1,0 +1,10 @@
+#!/bin/sh
+# Pre-commit-Hook: Privacy-Check (P11) vor jedem Commit.
+# Exit-Code != 0 (Fund oder Fehler im Check) -> Commit wird abgebrochen.
+# Voraussetzung: Commit aus einem Terminal mit aktivierter Umgebung playlist-agent.
+python -m playlist_agent.privacy_check
+status=$?
+if [ $status -ne 0 ]; then
+  echo "Commit abgebrochen: Privacy-Check (P11) meldet Fund oder Fehler - Ausgabe oben pruefen."
+  exit 1
+fi

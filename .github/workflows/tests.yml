@@ -1,0 +1,21 @@
+# CI: alle Tests bei jedem Push und Pull Request (Phase 3).
+# Tests nutzen nur synthetische Daten (tmp_path) und config/config.yaml -> keine privaten Daten im Log (P11).
+# Windows-Runner: Zielplattform beider Laptops (Laufwerksbuchstaben, CRLF, Pfadtrenner).
+name: tests
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  pytest:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+      - name: Paket mit Entwicklungsabhaengigkeiten installieren
+        run: python -m pip install -e ".[dev]"
+      - name: Tests
+        run: python -m pytest -q

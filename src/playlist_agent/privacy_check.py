@@ -28,7 +28,9 @@ TEXT_ENDUNGEN = {".ipynb", ".py", ".md", ".csv", ".yaml", ".yml", ".toml", ".txt
 
 # Allgemeine Wörter, die zufällig auch als Datei-/Ordnername auf dem Stick
 # vorkommen, aber Teil des Projektvokabulars sind (Fehlalarme, belegt 09.11.2026).
-GENERISCHE_BEGRIFFE = {"playlist", "software"}
+# "neuer ordner": Windows-Standardname eines Ordners auf dem Stick und Projektvokabular (P13),
+# kein privates Merkmal (Fehlalarm 15.11.2026).
+GENERISCHE_BEGRIFFE = {"playlist", "software", "neuer ordner"}
 
 def _norm(s: str) -> str:
     """NFC + Kleinschreibung: gleiche Schreibweise unabhängig von Kodierung."""
@@ -45,6 +47,18 @@ def _pfad_teile(pfad: str) -> set[str]:
     return {t.rsplit(".", 1)[0] if "." in t else t for t in teile if t}
 
 
+def lese_gold_csv(pfad: Path) -> list[str]:
+    """Alle nichtleeren Textwerte einer Gold-CSV; Trenner ';' oder ',' (BOM-fest).
+
+    Gold-Dateien ab NB04 Z.10 nutzen ';' (Excel-tauglich), ältere ',' (Befund 15.11.2026:
+    Komma-Annahme brach den Check ab). Trenner aus der Kopfzeile: häufigeres Zeichen gewinnt.
+    """
+    erste = Path(pfad).read_text(encoding="utf-8-sig").split("\n", 1)[0]
+    sep = ";" if erste.count(";") > erste.count(",") else ","
+    df = pd.read_csv(pfad, sep=sep, encoding="utf-8-sig", dtype=str, keep_default_na=False)
+    return [w for w in df.to_numpy().ravel() if isinstance(w, str) and w]
+
+
 def private_begriffe(root: Path) -> tuple[set[str], list[str]]:
     abgeleitet: set[str] = set()
     idx = root / "data/raw/index/musik_index.csv"
@@ -55,10 +69,8 @@ def private_begriffe(root: Path) -> tuple[set[str], list[str]]:
     for f in (root / "data/gold").glob("*.txt"):
         abgeleitet |= {z.strip() for z in f.read_text(encoding="utf-8").splitlines()}
     for f in (root / "data/gold").glob("*.csv"):
-        # Nur echte Texte prüfen: fehlende Werte bleiben in pandas 3 auch nach
-        # astype(str) ein NaN (float), daher Typprüfung statt Umwandlung.
-        for wert in pd.read_csv(f).to_numpy().ravel():
-            if isinstance(wert, str) and "/" in wert:
+        for wert in lese_gold_csv(f):
+            if "/" in wert or "\\" in wert:             # auch Windows-Pfade aus Gold-Originalen
                 abgeleitet |= _pfad_teile(wert)
 
     env = dotenv_values(root / ".env")
@@ -74,7 +86,8 @@ def private_begriffe(root: Path) -> tuple[set[str], list[str]]:
 def pruefe() -> int:
     root = Path(_git("rev-parse", "--show-toplevel").decode().strip())
     begriffe, erlaubt = private_begriffe(root)
-    dateien = _git("diff", "--cached", "--name-only", "--diff-filter=ACM").decode().split()
+    # splitlines statt split: Dateinamen mit Leerzeichen bleiben ganz (sonst ungeprüft)
+    dateien = _git("diff", "--cached", "--name-only", "--diff-filter=ACM").decode("utf-8").splitlines()
     dateien = [d for d in dateien if Path(d).suffix.lower() in TEXT_ENDUNGEN]
 
     funde = []
