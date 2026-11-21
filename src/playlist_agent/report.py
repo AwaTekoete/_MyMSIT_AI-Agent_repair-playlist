@@ -65,8 +65,11 @@ def _abschnitt_vorschlaege(v: pd.DataFrame) -> str:
         return "".join(t) + "_keine_\n\n## 4b Verschiebe-Vorschlaege (Ausfuehrung nur durch den Nutzer, P1)\n_keine_\n"
     if "aktion" not in v.columns:
         v = v.assign(aktion="?", entschieden_auf="keine")
+    # optionale Spalten: Stufe der Regel und Inhaltsbeleg-Hinweis (Arbeitspaket 4.9b)
+    extra = [c for c in ("stufe", "hinweis") if c in v.columns]
     je = (v.groupby(["eintrag", "pfad_ziel"], as_index=False)
           .agg(aktion=("aktion", "first"), entschieden_auf=("entschieden_auf", "first"),
+               **{c: (c, "first") for c in extra},
                **{"n [Eintraege]": ("playlist", "size"), "n [Playlists]": ("playlist", "nunique")}))
     g = gruppiere_vorschlaege(je)
     for pid, teil in g.groupby("paar_id", sort=False):
@@ -74,7 +77,7 @@ def _abschnitt_vorschlaege(v: pd.DataFrame) -> str:
         stand = ", ".join(f"{k}: {int(z.get(k, 0))}" for k in AKTIONEN)
         t.append(f"\n### {pid}: {_zelle(teil['alter_ordner'].iat[0])} -> {_zelle(teil['neuer_ordner'].iat[0])}\n")
         t.append(f"{len(teil)} [Pfade], {int(teil['n [Eintraege]'].sum())} [Eintraege]; Stand {stand}\n\n")
-        t.append(md_tabelle(teil[["eintrag", "pfad_ziel", "aktion", "entschieden_auf",
+        t.append(md_tabelle(teil[["eintrag", "pfad_ziel", *extra, "aktion", "entschieden_auf",
                                   "n [Eintraege]", "n [Playlists]"]]
                             .rename(columns={"pfad_ziel": "kandidat"}).sort_values("eintrag")))
     t.append("\n## 4b Verschiebe-Vorschlaege (Ausfuehrung nur durch den Nutzer, P1)\n")

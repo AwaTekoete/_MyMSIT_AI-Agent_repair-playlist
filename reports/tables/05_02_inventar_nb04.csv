@@ -1,0 +1,25 @@
+ordner,datei,groesse [KB]
+interim,04_04_index_aktuell.csv,842.8
+interim,04_05_resolver_crates.csv,451.5
+interim,04_05_resolver_playlists.csv,3216.8
+interim,04_06_dryrun_je_crate.csv,22.8
+interim,04_08_manifest_stick.csv,1311.6
+interim,04_16_dryrun_quellen_je_playlist.csv,44.5
+interim,04_23_dryrun_ordner.csv,47.8
+gold,04_10_vorschlag_labels.csv,18.0
+gold,04_11_vorschlag_labels.csv,24.5
+gold,04_14_pfadende_vorlage.csv,60.5
+gold,04_15_pfadende_labels.csv,72.5
+gold,04_19_pfadende_rest_vorlage.csv,13.9
+gold,04_20_pfadende_rest_labels.csv,17.1
+tables,04_01_regression_canon.csv,0.3
+tables,04_02_regression_serato.csv,0.4
+tables,04_03_regression_playlist.csv,0.2
+tables,04_04_index_drift.csv,0.1
+tables,04_05_resolver_echt.csv,0.8
+tables,04_05_resolver_synthetisch.csv,0.2
+tables,04_06_dryrun_zusammenfassung.csv,0.3
+tables,04_08_dubletten_nach_inhalt.csv,0.4
+tables,04_16_dryrun_quellen_zusammenfassung.csv,0.5
+tables,04_22_ordnertyp_zusammenfassung.csv,0.1
+tables,04_23_dryrun_ordner_zusammenfassung.csv,0.1

@@ -1,0 +1,23 @@
+quelle,klasse,klasse_neu,anzahl [Eintraege]
+crates,album_beschaedigt,album_beschaedigt,230
+crates,fehlt,fehlt,3
+crates,fehlt,sicher,1
+crates,fehlt,vorschlag,4
+crates,sicher,sicher,2374
+crates,vorschlag,vorschlag,142
+foobar_asus,sicher,sicher,197
+foobar_medion,ausgeschlossen,ausgeschlossen,2
+foobar_medion,fehlt,sicher,3
+foobar_medion,sicher,sicher,320
+mac_playlists,ausgeschlossen,ausgeschlossen,15
+mac_playlists,fehlt,vorschlag,1
+mac_playlists,sicher,sicher,486
+musik_playlists,album_beschaedigt,album_beschaedigt,678
+musik_playlists,ausgeschlossen,ausgeschlossen,2
+musik_playlists,fehlt,album_beschaedigt,15
+musik_playlists,fehlt,fehlt,35
+musik_playlists,fehlt,vorschlag,17
+musik_playlists,sicher,sicher,7490
+musik_playlists,stream,stream,2
+musik_playlists,vorschlag,sicher,2
+musik_playlists,vorschlag,vorschlag,1024

@@ -1,0 +1,4 @@
+ergebnis,faelle [Pfade],fehlvorschlag [%],ki95_unten [%],ki95_oben [%]
+kein,911,0.44,0.0,1.22
+eindeutig_fremd,4,0.44,0.0,1.22
+mehrdeutig,1,0.44,0.0,1.22

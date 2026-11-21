@@ -1,0 +1,12 @@
+regel,typ_ziel,ergebnis,faelle [Eintraege]
+R1,datei,eindeutig_richtig,4
+R1,datei,kein,16
+R1,leer,kein,20
+R1,ordner,kein,5
+R1,text,kein,17
+R2,datei,eindeutig_richtig,5
+R2,datei,kein,15
+R2,leer,kein,20
+R2,ordner,kein,5
+R2,text,eindeutig_ohne_referenz,1
+R2,text,kein,16

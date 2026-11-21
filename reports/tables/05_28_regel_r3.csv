@@ -1,0 +1,12 @@
+fall,ordner_status,ergebnis,faelle [Eintraege]
+A,ohne_nummer,kein,18
+A,vorhanden,eindeutig_ohne_referenz,11
+A,vorhanden,eindeutig_richtig,2
+A,vorhanden,kein,3
+A,vorhanden,mehrdeutig,2
+B,ohne_nummer,kein,1
+B,vorhanden,kein,3
+C,gleichstand,kein,5
+C,ohne_nummer,kein,1
+C,zu_unaehnlich,kein,1
+D,ohne_nummer,kein,2

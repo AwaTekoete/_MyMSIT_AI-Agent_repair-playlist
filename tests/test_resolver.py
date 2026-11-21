@@ -32,7 +32,7 @@ R = Resolver(IDX, AUDIO, leere_ordner=["Musik/Leer"])
     ("Musik/A/01 Lied.mp3".replace("a", "a"), "sicher", "pfad"),
     ("Music/A/01 Lied.mp3", "sicher", "pfadende"),                     # fremdes Praefix
     ("Musik/Z/01 Lied.mp3", "vorschlag", "name"),                      # nur Name
-    ("Musik/X/x.mp3", "sicher", "mehrfach_bitgleich"),
+    ("Musik/X/x.mp3", "vorschlag", "mehrfach_bitgleich"),            # Ort Gleichstand (21.11.)
     ("Musik/X/y.mp3", "vorschlag", "mehrfach"),
     ("Musik/G/z.mp3".replace("Musik", "Alt"), "sicher", "pfadende"),   # einer von zwei passt
     ("Musik/H/" + KAEFER.encode("utf-8").decode("cp1252"), "sicher", "mojibake"),
@@ -55,9 +55,10 @@ def test_regel_name_sicher():
     assert e.klasse == "sicher"
 
 
-def test_bitgleich_waehlt_deterministisch():
-    assert R.aufloesen("Musik/X/x.mp3").pfad == "Musik/B/x.mp3"
-
+def test_bitgleich_ort_gleichstand_ohne_pfad():
+    # Entscheidung 21.11.2026: Ort nach Ordner-Jaccard, Gleichstand -> kein Ort (Vorschlag)
+    e = R.aufloesen("Musik/X/x.mp3")
+    assert (e.pfad, e.kandidaten) == (None, ["Musik/B/x.mp3", "Musik/C/x.mp3"])
 
 
 
@@ -88,4 +89,7 @@ def test_projekt_config_entspricht_entscheidungen():
     # Schutz gegen unbeabsichtigte Änderung: config.yaml = Entscheidungen 12./14.11.2026
     cfg = yaml.safe_load((Path(__file__).parents[1] / "config/config.yaml").read_text(encoding="utf-8"))
     assert regeln_aus_config(cfg) == Regeln(pfadende_sicher=True, min_endteile=2,
-                                            name_sicher=False, bitgleich_sicher=True)
+                                            name_sicher=False, bitgleich_sicher=True,
+                                            audiogleich_sicher=True, zeichen_sicher=True,
+                                            praefix_aktiv=True, tracknummer_aktiv=True,
+                                            nullbyte_lose=True, jaccard_min=0.5)

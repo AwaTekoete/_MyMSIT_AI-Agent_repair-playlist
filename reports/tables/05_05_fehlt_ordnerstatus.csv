@@ -1,0 +1,5 @@
+quelle,gruppe,pfade [Pfade],ordner_vorhanden [Pfade]
+crates,fehlt/*,8,8
+crates,sicher/pfad,2350,2350
+playlists,fehlt/*,52,28
+playlists,sicher/pfad,1269,1269

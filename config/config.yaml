@@ -50,4 +50,9 @@ resolver:
   min_endteile: 2
   name_sicher: false        # Gold NB04 Z.10/11: 142/142 richtig, obere 95-%-Grenze 2,09 % -> keine 100 %
   bitgleich_sicher: true    # mehrere Kandidaten, alle mit gleichem SHA-256
-
+  audiogleich_sicher: true    # NB05 Z.27, Entscheidung 21.11.2026
+  zeichen_sicher: true        # R1, NB05 Z.11/14
+  praefix_aktiv: true         # R2 (Vorschlag), NB05 Z.14-22
+  tracknummer_aktiv: true     # R3 + V3 (Vorschlag), NB05 Z.28-33
+  nullbyte_lose: true         # 0-Byte-Ordner lose, NB05 Z.23
+  jaccard_min: 0.5            # Ordner-Jaccard für R3

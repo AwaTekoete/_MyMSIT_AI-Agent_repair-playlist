@@ -253,4 +253,52 @@ Pfade, Ordner-, Datei-, Titel- oder Interpretennamen; Beispiele sind generisch.
 
 ---
 
+## Phase 4 – Matching (16.–21.11.2026)
+
+### Negativkontrolle durch verstecktes Original (Leave-One-Out)
+**Definition:** Fuer Faelle mit bekannter richtiger Datei wird diese kuenstlich aus dem Kandidatenpool entfernt und die Regel erneut angewendet. Jeder eindeutige Treffer ist dann per Konstruktion ein Fehlvorschlag (obere Schranke: eine bitgleiche Kopie waere inhaltlich richtig). Misst die Fehlerrate einer Regel auf vielen Faellen statt auf wenigen Gold-Labels.
+**Projektbezug:** NB05 Z.14: R1 0/2.505 Fehlvorschlaege, R2 26/2.505 (1,04 %) -> R2 bleibt Vorschlag, obwohl Gold 6/6 richtig war. Z.17: in 26/26 Faellen haette keine fruehere Stufe gegriffen. Z.31: R3 4/916. Gold und Negativkontrolle gehoeren zusammen: Gold zeigt, dass die Regel richtige Treffer findet; die Negativkontrolle zeigt, was sie vorschlaegt, wenn das Richtige fehlt.
+
+### Bootstrap ueber Gruppen (Cluster-Bootstrap)
+**Definition:** Sind Einheiten innerhalb einer Gruppe abhaengig (Dateien desselben Ordners), wird beim Bootstrap nicht je Einheit, sondern je Gruppe mit Zuruecklegen gezogen. Das Intervall wird breiter und ehrlicher als beim Ziehen je Einheit.
+**Projektbezug:** NB05 Z.14/31: Fehlvorschlagsrate R2 1,04 % (KI 0,35–1,88 % ueber 215 Ordner), R3 0,44 % (KI 0,00–1,22 % ueber 94 Ordner). Bei 0 Treffern liefert der Bootstrap keine Streuung; dann Rule of Three, konservativ je Gruppe (3/215 ≈ 1,4 %).
+
+### Ueberanpassung einer Regel an die Testdaten
+**Definition:** Wird eine Regel (z. B. ein Veto) aus den Fehlern einer Messung abgeleitet und auf denselben Daten erneut gemessen, ist das Ergebnis optimistisch verzerrt. Ein unabhaengiger Beleg (neue Faelle, andere Gruppen) fehlt.
+**Projektbezug:** Veto V3 (NB05 Z.33) faengt 4/4 Fehlvorschlaege der R3-Negativkontrolle ab, wurde aber genau an diesen 4 Faellen entwickelt; Gold stammt aus nur 2 Ordnern -> R3 + V3 bleibt Vorschlag, Hochstufung erst mit Labels aus weiteren Ordnern.
+
+### Audio-Hash ohne Tags
+**Definition:** Pruefsumme nur ueber die Audiodaten einer mp3; Metadaten-Bloecke werden uebersprungen: ID3v2 am Anfang (Groesse in 4 "synchsafe"-Bytes, 7 Bit je Byte, optional 10-Byte-Footer), APEv2 und ID3v1 (128 Byte, Kennung `TAG`) am Ende. Gleiche Musik mit geaenderten Tags ergibt denselben Wert.
+**Projektbezug:** NB05 Z.27: zwei Faelle mit je 3 Kandidaten, gleiche Groesse und Dauer, Datei-Hash verschieden, Audio-Hash gleich -> Tags bei gleich langem Tag-Bereich geaendert. Z.38 (alle 4.924 mp3, 9,3 min): 92 audio-gleiche gegen 45 bitgleiche Paare. Grundlage der Stufe `mehrfach_audiogleich` (sicher nur, wenn alle Kandidaten gleich; eine gekuerzte Kopie ergibt einen anderen Audio-Hash).
+
+### Aufloesung (Quantisierung) eines Belegs
+**Definition:** Ein Messwert kann nur Unterschiede oberhalb seiner Aufloesung zeigen. Liegt der gesuchte Unterschied darunter, ist das Merkmal als Beleg ungeeignet, auch wenn es "passt".
+**Projektbezug:** Serato `tsiz` mit 0,1 MiB (ca. 105 KB, bei 8 MiB ca. ±0,6 %); 13 von 26 R2-Fehlvorschlaegen weichen weniger als 1 % in der Groesse ab. `tlen` mit 0,01 s ist feiner, trennt aber nicht "geschnitten" von "andere Version" (Nutzer schneidet Titel nachtraeglich).
+
+### Inhaltsbeleg als Hinweis statt Entscheidung
+**Definition:** Ein Merkmal, das richtige und falsche Faelle nur teilweise trennt, wird nicht als Schwelle fuer eine automatische Entscheidung genutzt, sondern dem Menschen als Information angezeigt.
+**Projektbezug:** `belege.py`: "Serato: Dauer -0.60 s (abweichend), Groesse 132.5 -> 132.4 MiB (abweichend)" je Vorschlag im Bericht (Abschnitt 4). Toleranz "Kandidat bis 4 s kuerzer" haette Gold 6/6 bestaetigt, aber 2/26 Fehlvorschlaege durchgelassen.
+
+### Regressionskriterien statt 1:1-Nachstellung
+**Definition:** Wird eine Kaskade erweitert, laesst sich der alte Lauf oft nicht exakt nachstellen. Stattdessen wird geprueft: (K1) alles, was die neuen Stufen nicht beruehren duerfen, ist unveraendert; (K2) die beruehrten Faelle entsprechen der vorab durchgefuehrten Analyse.
+**Projektbezug:** NB05 Z.35: K1 0 Abweichungen bei allen bereits geloesten Eintraegen; K2 62/62 Faelle wie in der Notebook-Analyse. Zaehlschluessel muessen gleich sein (je Quelle und Pfad; derselbe Pfad aus Crates und Playlists zaehlt zweimal).
+
+### Idempotentes Speichern von Artefakten
+**Definition:** Eine Speicherfunktion ist idempotent, wenn wiederholtes Ausfuehren mit gleichem Ergebnis nichts aendert. Weicht das Ergebnis ab, meldet sie einen Fehler statt still zu ueberschreiben; Ueberschreiben nur ausdruecklich.
+**Projektbezug:** `projekt.tabelle_speichern` (Befund 15.11.: NB02-Tabellen still ueberschrieben). Bewaehrt in NB05 Z.37: eine zuvor falsch gespeicherte Tabelle (Zeilenvervielfachung durch NFC-Duplikate im Merge-Schluessel) wurde beim korrigierten Lauf erkannt.
+
+### Zeilenvervielfachung im Merge (nicht eindeutiger Schluessel)
+**Definition:** Kommt ein Schluessel in der rechten Tabelle mehrfach vor, erzeugt ein Merge je Treffer eine eigene Zeile; Summen werden zu gross, ohne Fehlermeldung.
+**Projektbezug:** NB05 Z.37: 9.263 statt 7.915 Crate-Eintraege, weil 390 Pfade nach NFC paarweise zusammenfielen. Pruefung vor dem Merge: doppelte Schluessel zaehlen, Widerspruchsfreiheit sichern, dann zusammenfassen.
+
+### Ordner-Jaccard als Ortswahl und Zuordnung
+**Definition:** Jaccard-Index der Woerter/Zahlen zweier Ordnernamen; bei Gleichstand der besten Kandidaten wird nicht gewaehlt.
+**Projektbezug:** Ort bei inhaltsgleichen Mehrfach-Kandidaten (Ziel 0,667 bzw. 0,444 gegen Kopien 0,000) und Zielordner fuer R3 (>= 0,5, eindeutig); Gleichstand (z. B. zwei Ordner gleichen Namens bis auf eine Nummer) fuehrt bewusst zu "kein Treffer".
+
+### Zentraler Projekt-Kontext statt kopierter Setup-Zellen
+**Definition:** Gemeinsame Pfade, Konfiguration und Hilfsfunktionen liegen in einem getesteten Modul; Notebooks importieren sie. Kopierte Setup-Zellen vervielfachen Fehler und machen Schnittstellen unsichtbar.
+**Projektbezug:** `projekt.py` (21.11.): Wurzel ueber `pyproject.toml`, `kontext()`, `tabelle_speichern()`, `stick()` ueber `anchor.verankere`. Ausloeser: mehrfach geratene Schnittstellen (`finde_stick` ohne Signatur) und ueberschreibendes `tabelle_speichern` in jeder Kopie.
+
+---
+
 *Wird bei jedem neuen methodischen Konzept ergaenzt.*

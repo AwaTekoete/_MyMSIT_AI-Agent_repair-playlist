@@ -1,0 +1,16 @@
+klasse,stufe,anzahl [Pfade],quelle,anzahl [Eintraege]
+album_beschaedigt,0-byte-ordner,230.0,crates,
+fehlt,kein_kandidat,8.0,crates,
+sicher,pfad,2350.0,crates,
+sicher,pfadende,24.0,crates,
+vorschlag,name,142.0,crates,
+album_beschaedigt,0-byte-ordner,,playlists,678.0
+ausgeschlossen,begleitdatei,,playlists,16.0
+ausgeschlossen,sonstige,,playlists,1.0
+ausgeschlossen,video,,playlists,2.0
+fehlt,kein_kandidat,,playlists,71.0
+sicher,pfad,,playlists,8201.0
+sicher,pfadende,,playlists,292.0
+stream,webradio,,playlists,2.0
+vorschlag,mehrfach,,playlists,2.0
+vorschlag,name,,playlists,1024.0
