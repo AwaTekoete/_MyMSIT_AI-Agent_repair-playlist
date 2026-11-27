@@ -68,7 +68,7 @@ def tabelle_speichern(df: pd.DataFrame, name: str, ordner: Path,
 
     Datei fehlt -> schreiben. Datei existiert mit gleichem Inhalt -> nichts tun
     ("Run All" bleibt lauffaehig). Datei existiert mit anderem Inhalt ->
-    ArtefaktGeaendert, ausser ueberschreiben=True.
+    ArtefaktGeaendert, ausser ueberschreiben=True. Meldet Pfad und Zeilenzahl.
     """
     if not ARTEFAKT_MUSTER.match(name):
         raise ValueError(f"Name '{name}' entspricht nicht <NB>_<Zelle>_<slug>.")
@@ -76,14 +76,19 @@ def tabelle_speichern(df: pd.DataFrame, name: str, ordner: Path,
     # Zeilenende fest LF; Vergleich unabhaengig von CRLF/LF (Windows-Uebersetzung,
     # aeltere Artefakte wurden mit CRLF geschrieben)
     neu = df.to_csv(index=False, lineterminator="\n")
+    anzeige = "/".join(pfad.parts[-3:])          # z. B. reports/errors/06_02_....csv
     if pfad.exists() and not ueberschreiben:
+        # beide Seiten gleich normalisieren: Feldwerte koennen selbst CRLF enthalten
+        # (z. B. mehrzeilige Comments, Befund 22.11.2026)
         alt = pfad.read_bytes().decode("utf-8").replace("\r\n", "\n")
-        if alt == neu:
+        if alt == neu.replace("\r\n", "\n"):
+            print(f"vorhanden (unveraendert): {anzeige} ({len(df)} Zeilen)")
             return pfad
         raise ArtefaktGeaendert(
             f"{pfad.name} existiert mit anderem Inhalt; Ergebnis hat sich geaendert. "
             "Pruefen, dann bewusst mit ueberschreiben=True speichern.")
     pfad.write_bytes(neu.encode("utf-8"))
+    print(f"gespeichert: {anzeige} ({len(df)} Zeilen)")
     return pfad
 
 

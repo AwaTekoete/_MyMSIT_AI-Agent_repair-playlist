@@ -68,3 +68,19 @@ def test_stick_ueber_signatur(tmp_path, monkeypatch):
     monkeypatch.setattr(projekt.anchor.socket, "gethostname", lambda: "testhost")
     monkeypatch.setattr(projekt.anchor, "laufwerks_wurzeln", lambda: [musik])
     assert projekt.stick(cfg) == musik
+
+
+def test_tabelle_meldet_pfad(tmp_path, capsys):
+    o = tmp_path / "reports" / "tables"
+    o.mkdir(parents=True)
+    projekt.tabelle_speichern(pd.DataFrame({"x": [1, 2]}), "05_01_test", o)
+    assert "gespeichert: reports/tables/05_01_test.csv (2 Zeilen)" in capsys.readouterr().out
+    projekt.tabelle_speichern(pd.DataFrame({"x": [1, 2]}), "05_01_test", o)
+    assert "vorhanden (unveraendert): reports/tables/05_01_test.csv" in capsys.readouterr().out
+
+
+def test_tabelle_crlf_im_feldwert(tmp_path):
+    # Befund 22.11.2026: Feldwerte mit CRLF (mehrzeilige Comments) galten faelschlich als geaendert
+    df = pd.DataFrame({"x": ["a\r\nb", "c"]})
+    projekt.tabelle_speichern(df, "06_04_test", tmp_path)
+    projekt.tabelle_speichern(df, "06_04_test", tmp_path)          # darf nicht abbrechen
